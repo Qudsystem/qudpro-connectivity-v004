@@ -1,19 +1,28 @@
-import { User } from "lucide-react";
+import { User, MapPin, Users } from "lucide-react";
 
 const ProfileCard = () => {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-auto transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="flex items-center justify-center mb-4">
-        <div className="w-20 h-20 bg-qudpro-primary rounded-full flex items-center justify-center">
-          <User className="w-10 h-10 text-white" />
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="h-16 bg-gradient-to-r from-blue-600 to-blue-700"></div>
+      <div className="px-4 py-4">
+        <div className="relative -mt-12 mb-3">
+          <div className="w-20 h-20 bg-gray-200 rounded-full border-4 border-white flex items-center justify-center">
+            <User className="w-10 h-10 text-gray-500" />
+          </div>
         </div>
-      </div>
-      <div className="text-center">
-        <h3 className="text-xl font-semibold text-qudpro-primary">John Doe</h3>
-        <p className="text-gray-600 mb-4">Professional Photographer</p>
-        <div className="space-y-2">
-          <div className="text-sm text-gray-500">Cairo, Egypt</div>
-          <div className="text-sm text-gray-500">500+ Connections</div>
+        <div className="space-y-1.5">
+          <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer">
+            John Doe
+          </h3>
+          <p className="text-sm text-gray-600">Professional Photographer</p>
+          <div className="flex items-center space-x-1 text-sm text-gray-500">
+            <MapPin className="w-4 h-4" />
+            <span>Cairo, Egypt</span>
+          </div>
+          <div className="flex items-center space-x-1 text-sm text-gray-500">
+            <Users className="w-4 h-4" />
+            <span>500+ connections</span>
+          </div>
         </div>
       </div>
     </div>
