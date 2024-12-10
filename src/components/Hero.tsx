@@ -1,30 +1,44 @@
-import { Camera, Users } from "lucide-react";
+import { Camera, Users, Search, Bell } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="relative bg-white border-b border-gray-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="animate-fade-up space-y-6">
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-center text-gray-900">
-            Welcome to QudPro
-          </h1>
-          <p className="text-lg text-center max-w-2xl mx-auto text-gray-600">
-            Connecting Egyptian professionals through visual storytelling
-          </p>
-          <div className="flex justify-center space-x-8">
-            <div className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
-              <Camera className="w-5 h-5" />
-              <span className="text-sm font-medium">Share Your Story</span>
-            </div>
-            <div className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors cursor-pointer">
-              <Users className="w-5 h-5" />
-              <span className="text-sm font-medium">Connect with Professionals</span>
+    <div className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-qudpro-primary">QudPro</h1>
+            <div className="hidden md:block ml-10">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-qudpro-primary focus:border-transparent"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+          
+          <div className="flex items-center space-x-6">
+            <button className="text-gray-600 hover:text-qudpro-primary">
+              <Camera className="h-6 w-6" />
+            </button>
+            <button className="text-gray-600 hover:text-qudpro-primary">
+              <Users className="h-6 w-6" />
+            </button>
+            <button className="text-gray-600 hover:text-qudpro-primary relative">
+              <Bell className="h-6 w-6" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                3
+              </span>
+            </button>
+            <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-sm font-medium text-gray-600">JD</span>
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="absolute bottom-2 right-4 text-xs text-gray-500">
-        Powered by QudSystem
       </div>
     </div>
   );
