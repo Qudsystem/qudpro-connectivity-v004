@@ -22,3 +22,11 @@ export interface PlatformStats {
   articles: number;
   upcomingEvents: number;
 }
+
+export interface NotificationType {
+  id: number;
+  type: "connection" | "like" | "message" | "job";
+  content: string;
+  time: string;
+  read: boolean;
+}

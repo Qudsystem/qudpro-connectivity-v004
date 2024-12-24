@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Network from "./pages/Network";
 import Jobs from "./pages/Jobs";
 import Messages from "./pages/Messages";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/network" element={<Network />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
