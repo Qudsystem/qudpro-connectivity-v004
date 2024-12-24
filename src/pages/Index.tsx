@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import PhotoGrid from "@/components/PhotoGrid";
 import ProfileCard from "@/components/ProfileCard";
+import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Users, Briefcase, BookOpen, Calendar } from "lucide-react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -23,11 +24,14 @@ const ErrorFallback = ({ error }: { error: Error }) => {
 };
 
 const Index = () => {
+  // This would be replaced with actual auth logic
+  const isAuthenticated = false;
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Hero />
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Left Sidebar */}
             <div className="lg:col-span-1">
@@ -117,6 +121,7 @@ const Index = () => {
             </div>
           </div>
         </div>
+        {!isAuthenticated && <Footer />}
       </ErrorBoundary>
     </div>
   );
