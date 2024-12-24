@@ -1,7 +1,11 @@
 import { Image, ThumbsUp, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
 import { Card } from "./ui/card";
+import { Skeleton } from "./ui/skeleton";
+import type { Post } from "@/types";
+import { useState } from "react";
+import { toast } from "./ui/use-toast";
 
-const photos = [
+const photos: Post[] = [
   {
     id: 1,
     title: "Cairo Business District",
@@ -65,10 +69,50 @@ const photos = [
 ];
 
 const PhotoGrid = () => {
+  const [loading, setLoading] = useState(false);
+  const [likedPosts, setLikedPosts] = useState<number[]>([]);
+
+  const handleLike = (postId: number) => {
+    if (likedPosts.includes(postId)) {
+      setLikedPosts(prev => prev.filter(id => id !== postId));
+      toast({
+        description: "Post unliked",
+        duration: 2000,
+      });
+    } else {
+      setLikedPosts(prev => [...prev, postId]);
+      toast({
+        description: "Post liked!",
+        duration: 2000,
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[150px]" />
+                </div>
+              </div>
+              <Skeleton className="h-[400px] w-full rounded-lg" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {photos.map((photo) => (
-        <Card key={photo.id} className="overflow-hidden">
+        <Card key={photo.id} className="overflow-hidden animate-fade-in">
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
@@ -98,13 +142,19 @@ const PhotoGrid = () => {
               src={photo.imageUrl}
               alt={photo.title}
               className="w-full h-[400px] object-cover rounded-lg"
+              loading="lazy"
             />
             
             <div className="mt-4 flex items-center justify-between text-gray-500">
               <div className="flex space-x-6">
-                <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+                <button 
+                  className={`flex items-center space-x-1 transition-colors ${
+                    likedPosts.includes(photo.id) ? 'text-blue-600' : 'hover:text-blue-600'
+                  }`}
+                  onClick={() => handleLike(photo.id)}
+                >
                   <ThumbsUp className="w-5 h-5" />
-                  <span>{photo.likes}</span>
+                  <span>{likedPosts.includes(photo.id) ? photo.likes + 1 : photo.likes}</span>
                 </button>
                 <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
                   <MessageCircle className="w-5 h-5" />
