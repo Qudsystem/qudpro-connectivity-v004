@@ -82,3 +82,9 @@ export interface WorkItem {
   count: number;
   type: "job" | "post" | "event" | "group";
 }
+
+export interface AuthResponse {
+  user: UserProfile | null;
+  session: any | null;
+  error: Error | null;
+}
