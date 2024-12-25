@@ -80,7 +80,8 @@ export interface WorkItem {
   title: string;
   description: string;
   count: number;
-  type: "job" | "post" | "event" | "group";
+  type: "project" | "content" | "event" | "group";
+  icon: React.ReactNode;
 }
 
 export interface AuthResponse {
