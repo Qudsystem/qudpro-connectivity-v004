@@ -1,6 +1,15 @@
-import { Camera, Users, Search, Bell, MessageCircle, Home, Briefcase, Grid } from "lucide-react";
+import { Camera, Users, Search, Bell, MessageCircle, Home, Briefcase, Grid, LogOut, Settings, User, HelpCircle } from "lucide-react";
 import { Input } from "./ui/input";
 import { Link, useLocation } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Hero = () => {
   const location = useLocation();
@@ -33,9 +42,44 @@ const Hero = () => {
             <NavItem to="/notifications" icon={<Bell className="h-6 w-6" />} label="Notifications" count={3} active={location.pathname === '/notifications'} />
             <NavItem to="/work" icon={<Grid className="h-6 w-6" />} label="Work" active={location.pathname === '/work'} />
             <div className="border-l border-gray-200 dark:border-gray-700 h-6 mx-2"></div>
-            <Link to="/profile" className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">JD</span>
-            </Link>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:ring-2 hover:ring-gray-300 transition-all">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">JD</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">John Doe</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      john.doe@example.com
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help Center</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 dark:text-red-400">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile menu button */}
@@ -43,9 +87,44 @@ const Hero = () => {
             <button className="text-gray-600 dark:text-gray-300">
               <Bell className="h-6 w-6" />
             </button>
-            <Link to="/profile" className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">JD</span>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">JD</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                {/* Same dropdown content as desktop */}
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">John Doe</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      john.doe@example.com
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help Center</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 dark:text-red-400">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
