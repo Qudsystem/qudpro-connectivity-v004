@@ -13,7 +13,7 @@ const Work = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  const workItems = [
+  const workItems: WorkItem[] = [
     {
       id: 1,
       title: "Photography Project Management",
