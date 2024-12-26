@@ -5,9 +5,9 @@ class AIService {
   private secondaryModel: any;
   
   constructor() {
-    // Initialize both models
-    const primaryKey = import.meta.env.VITE_GEMINI_API_KEY_PRIMARY;
-    const secondaryKey = import.meta.env.VITE_GEMINI_API_KEY_SECONDARY;
+    // Initialize both models with the provided API keys
+    const primaryKey = "AIzaSyDr8Zmcb8fW-yKo9350iz1BregiA1pP1NI";
+    const secondaryKey = "AIzaSyBIn3fBkcPLhya9JsOUReb4m9-xXqC8YME";
     
     if (primaryKey) {
       const primaryAI = new GoogleGenerativeAI(primaryKey);
