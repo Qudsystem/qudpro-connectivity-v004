@@ -5,18 +5,14 @@ class AIService {
   private secondaryModel: any;
   
   constructor() {
-    // Initialize both models with the provided API keys
-    const primaryKey = "AIzaSyDr8Zmcb8fW-yKo9350iz1BregiA1pP1NI";
-    const secondaryKey = "AIzaSyBIn3fBkcPLhya9JsOUReb4m9-xXqC8YME";
+    // Initialize with the API key
+    const apiKey = "AIzaSyBIn3fBkcPLhya9JsOUReb4m9-xXqC8YME";
     
-    if (primaryKey) {
-      const primaryAI = new GoogleGenerativeAI(primaryKey);
-      this.primaryModel = primaryAI.getGenerativeModel({ model: "gemini-pro" });
-    }
-    
-    if (secondaryKey) {
-      const secondaryAI = new GoogleGenerativeAI(secondaryKey);
-      this.secondaryModel = secondaryAI.getGenerativeModel({ model: "gemini-pro" });
+    if (apiKey) {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      this.primaryModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+      // Use the same key for secondary as fallback
+      this.secondaryModel = genAI.getGenerativeModel({ model: "gemini-pro" });
     }
   }
 
