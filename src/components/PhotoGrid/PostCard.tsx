@@ -1,15 +1,23 @@
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Card } from "../ui/card";
 import { toast } from "../ui/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Post } from "@/types";
 
 interface PostCardProps {
   post: Post;
   onLike: (postId: number) => void;
+  onEdit: (post: Post) => void;
+  onDelete: (postId: number) => void;
   isLiked: boolean;
 }
 
-const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
+const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) => {
   return (
     <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
@@ -31,9 +39,30 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
               </div>
             </div>
           </div>
-          <button className="text-gray-400 hover:text-gray-600">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-gray-400 hover:text-gray-600">
+              <MoreHorizontal className="w-5 h-5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => onEdit(post)}>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => {
+                  onDelete(post.id);
+                  toast({
+                    description: "Post deleted",
+                    duration: 2000,
+                  });
+                }}
+                className="text-red-600"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <p className="text-gray-600 mb-4">{post.description}</p>
