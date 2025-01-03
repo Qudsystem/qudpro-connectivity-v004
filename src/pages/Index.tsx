@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import PhotoGrid from "@/components/PhotoGrid";
+import { PostCreator } from "@/components/PostCreator/PostCreator";
 import ProfileCard from "@/components/ProfileCard";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -24,7 +25,6 @@ const ErrorFallback = ({ error }: { error: Error }) => {
 };
 
 const Index = () => {
-  // This would be replaced with actual auth logic
   const isAuthenticated = false;
 
   return (
@@ -69,16 +69,7 @@ const Index = () => {
             {/* Main Content */}
             <div className="lg:col-span-2">
               <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <Card className="p-4 mb-6 bg-white dark:bg-gray-800 shadow-sm">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300">JD</span>
-                    </div>
-                    <button className="flex-1 text-left px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                      Share your thoughts or photos...
-                    </button>
-                  </div>
-                </Card>
+                <PostCreator />
                 <PhotoGrid />
               </ErrorBoundary>
             </div>
