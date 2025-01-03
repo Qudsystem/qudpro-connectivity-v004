@@ -1,23 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Card } from "../ui/card";
 import type { Post } from "@/types";
-import PostCard from "./PostCard";
+import PostList from "../PostList";
 import { usePosts } from "@/hooks/usePosts";
+import { generateRandomPost } from "@/utils/postGenerators";
+import { toast } from "@/components/ui/use-toast";
 
 const PhotoGrid = () => {
-  const { posts, isLoading, createPost, updatePost, deletePost } = usePosts();
+  const { posts: userPosts, isLoading: isUserPostsLoading, createPost, updatePost, deletePost } = usePosts();
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      setIsLoading(true);
+      try {
+        // Generate initial random posts
+        const randomPosts = Array.from({ length: 5 }, () => generateRandomPost());
+        
+        // Combine user posts with random posts and sort by timestamp
+        const combined = [...userPosts, ...randomPosts].sort((a, b) => {
+          const timeA = new Date(a.timeAgo).getTime();
+          const timeB = new Date(b.timeAgo).getTime();
+          return timeB - timeA;
+        });
+        
+        setAllPosts(combined);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load posts. Please try again later.",
+          duration: 3000,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadPosts();
+
+    // Add new random posts periodically
+    const interval = setInterval(() => {
+      const newPost = generateRandomPost();
+      setAllPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]); // Keep only last 10 posts
+      toast({
+        description: "New post added to your feed!",
+        duration: 2000,
+      });
+    }, 30000); // Add new post every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [userPosts]);
 
   const handleLike = (postId: number) => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(prev => prev.filter(id => id !== postId));
+      toast({
+        description: "Post unliked",
+        duration: 2000,
+      });
     } else {
       setLikedPosts(prev => [...prev, postId]);
+      toast({
+        description: "Post liked!",
+        duration: 2000,
+      });
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUserPostsLoading) {
     return (
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
@@ -39,18 +92,13 @@ const PhotoGrid = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {posts.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onLike={handleLike}
-          onEdit={updatePost}
-          onDelete={deletePost}
-          isLiked={likedPosts.includes(post.id)}
-        />
-      ))}
-    </div>
+    <PostList
+      posts={allPosts}
+      onLike={handleLike}
+      onEdit={updatePost}
+      onDelete={deletePost}
+      likedPosts={likedPosts}
+    />
   );
 };
 
