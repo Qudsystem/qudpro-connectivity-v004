@@ -1,5 +1,6 @@
 import { User, MapPin, Users, Briefcase, Link2, Camera } from "lucide-react";
 import { Card } from "./ui/card";
+import { defaultProfile } from "@/utils/profileGenerator";
 
 const ProfileCard = () => {
   return (
@@ -18,27 +19,27 @@ const ProfileCard = () => {
         <div className="space-y-4">
           <div>
             <h3 className="text-xl font-semibold text-gray-900 hover:text-qudpro-primary cursor-pointer">
-              John Doe
+              {defaultProfile.name}
             </h3>
-            <p className="text-sm text-gray-600">Professional Photographer</p>
+            <p className="text-sm text-gray-600">{defaultProfile.role}</p>
           </div>
           
           <div className="space-y-2 text-sm text-gray-600">
             <div className="flex items-center space-x-2">
               <Briefcase className="w-4 h-4" />
-              <span>Freelance Photographer</span>
+              <span>{defaultProfile.company}</span>
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
-              <span>Cairo, Egypt</span>
+              <span>{defaultProfile.location}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Link2 className="w-4 h-4" />
-              <a href="#" className="text-blue-600 hover:underline">portfolio.com</a>
+              <a href="#" className="text-blue-600 hover:underline">{defaultProfile.website}</a>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
-              <span>500+ connections</span>
+              <span>{defaultProfile.connections}+ connections</span>
             </div>
           </div>
           
@@ -55,10 +56,10 @@ const ProfileCard = () => {
             <h4 className="text-sm font-medium text-gray-900 mb-2">Profile Analytics</h4>
             <div className="space-y-2 text-sm">
               <p className="text-gray-600">
-                <span className="text-qudpro-primary">82</span> profile views
+                <span className="text-qudpro-primary">{defaultProfile.views}</span> profile views
               </p>
               <p className="text-gray-600">
-                <span className="text-qudpro-primary">120</span> post impressions
+                <span className="text-qudpro-primary">{defaultProfile.impressions}</span> post impressions
               </p>
             </div>
           </div>
