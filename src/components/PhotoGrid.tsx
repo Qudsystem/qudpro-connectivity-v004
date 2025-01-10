@@ -1,75 +1,10 @@
 import { Image, ThumbsUp, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
 import { Card } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
-import type { Post } from "@/types";
+import type { Post, Comment } from "@/types";
 import { useState, useEffect } from "react";
 import { toast } from "./ui/use-toast";
-
-// Helper function to generate random time
-const getRandomTimeAgo = () => {
-  const times = ['just now', '5 minutes ago', '10 minutes ago', '30 minutes ago', '1 hour ago', '2 hours ago', '5 hours ago', '1 day ago'];
-  return times[Math.floor(Math.random() * times.length)];
-};
-
-// Helper function to generate random Egyptian names
-const getRandomEgyptianName = () => {
-  const firstNames = ['Ahmed', 'Mohamed', 'Sara', 'Nour', 'Hassan', 'Fatima', 'Youssef', 'Mariam', 'Omar', 'Layla'];
-  const lastNames = ['Ibrahim', 'Hassan', 'Ali', 'Mohamed', 'Ahmed', 'Mahmoud', 'Kamal', 'Samir', 'Farid', 'Zaki'];
-  return `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-};
-
-// Helper function to generate random roles
-const getRandomRole = () => {
-  const roles = [
-    'Software Engineer',
-    'Product Designer',
-    'Marketing Specialist',
-    'Content Creator',
-    'Business Developer',
-    'UI/UX Designer',
-    'Project Manager',
-    'Digital Marketing Manager',
-    'Photographer',
-    'Startup Founder'
-  ];
-  return roles[Math.floor(Math.random() * roles.length)];
-};
-
-// Helper function to generate random descriptions about Egypt
-const getRandomDescription = () => {
-  const descriptions = [
-    "Exploring innovative tech solutions in Cairo's bustling startup ecosystem",
-    "Capturing the essence of Alexandria's historic architecture",
-    "Working on exciting projects that shape Egypt's digital future",
-    "Collaborating with talented professionals in Egypt's tech hub",
-    "Building bridges between traditional and modern business practices in Egypt",
-    "Showcasing Egyptian creativity through digital innovation",
-    "Contributing to Egypt's growing tech community",
-    "Developing sustainable solutions for Egyptian businesses",
-    "Creating opportunities in Egypt's digital economy",
-    "Innovating at the heart of MENA's tech revolution"
-  ];
-  return descriptions[Math.floor(Math.random() * descriptions.length)];
-};
-
-// Function to generate random posts
-const generateRandomPosts = (count: number): Post[] => {
-  return Array.from({ length: count }, (_, index) => ({
-    id: Date.now() + index,
-    title: `Post ${index + 1}`,
-    category: ['Professional', 'Technology', 'Business', 'Design', 'Innovation'][Math.floor(Math.random() * 5)],
-    description: getRandomDescription(),
-    imageUrl: `https://source.unsplash.com/random/800x600/?egypt,business&sig=${Date.now() + index}`,
-    author: {
-      name: getRandomEgyptianName(),
-      role: getRandomRole(),
-      avatar: `https://source.unsplash.com/random/40x40/?portrait&sig=${Date.now() + index}`
-    },
-    likes: Math.floor(Math.random() * 500) + 50,
-    comments: Math.floor(Math.random() * 100) + 10,
-    timeAgo: getRandomTimeAgo()
-  }));
-};
+import { generateRandomPosts } from "./PhotoGrid/PostGenerator";
 
 const PhotoGrid = () => {
   const [loading, setLoading] = useState(true);
@@ -195,12 +130,30 @@ const PhotoGrid = () => {
                 </button>
                 <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
                   <MessageCircle className="w-5 h-5" />
-                  <span>{post.comments}</span>
+                  <span>{post.comments.length}</span>
                 </button>
               </div>
               <button className="hover:text-blue-600 transition-colors">
                 <Share2 className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* Comments Section */}
+            <div className="mt-4 space-y-4">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="flex space-x-3 text-sm">
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.name}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div>
+                    <div className="font-medium">{comment.author.name}</div>
+                    <p className="text-gray-600">{comment.content}</p>
+                    <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </Card>
