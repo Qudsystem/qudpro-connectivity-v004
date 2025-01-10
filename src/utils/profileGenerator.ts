@@ -21,7 +21,12 @@ const arabicNames = [
   "Karim Adel",
   "Mostafa Ibrahim",
   "Amr Yasser",
-  "Tarek Mahmoud"
+  "Tarek Mahmoud",
+  "Nour El Din",
+  "Ziad Ahmed",
+  "Hossam Hassan",
+  "Sherif Mohamed",
+  "Ayman Khalil"
 ];
 
 const roles = [
@@ -34,7 +39,12 @@ const roles = [
   "Event Photographer",
   "Product Photographer",
   "Travel Photographer",
-  "Food Photographer"
+  "Food Photographer",
+  "Creative Director",
+  "Visual Artist",
+  "Photography Consultant",
+  "Studio Manager",
+  "Digital Imaging Specialist"
 ];
 
 const companies = [
@@ -47,7 +57,12 @@ const companies = [
   "Luxor Photography",
   "Aswan Studios",
   "Red Sea Media",
-  "Giza Photography"
+  "Giza Photography",
+  "QudPro Studios",
+  "Pharaoh Media Group",
+  "Mediterranean Visuals",
+  "Desert Light Photography",
+  "Valley of Kings Studio"
 ];
 
 const locations = [
@@ -60,7 +75,12 @@ const locations = [
   "Sharm El Sheikh, Egypt",
   "Mansoura, Egypt",
   "Port Said, Egypt",
-  "Ismailia, Egypt"
+  "Ismailia, Egypt",
+  "6th of October City, Egypt",
+  "New Cairo, Egypt",
+  "El Gouna, Egypt",
+  "Dahab, Egypt",
+  "Marsa Alam, Egypt"
 ];
 
 export const generateProfile = (): Profile => {
@@ -76,12 +96,12 @@ export const generateProfile = (): Profile => {
     role,
     company,
     location,
-    website: `${username}.portfolio.com`,
+    website: `${username}.qudpro.com`,
     email: `${username}@qudpro.com`,
     connections: Math.floor(Math.random() * 900) + 100,
     views: Math.floor(Math.random() * 100) + 1,
     impressions: Math.floor(Math.random() * 200) + 1,
-    about: `Professional photographer with extensive experience in ${role.toLowerCase()}. Passionate about capturing the essence of Egyptian culture and landscapes through the lens.`
+    about: `Professional ${role.toLowerCase()} with extensive experience in the Egyptian market. Based in ${location} and currently working at ${company}. Passionate about capturing the essence of Egyptian culture and landscapes through the lens.`
   };
 };
 

@@ -1,8 +1,27 @@
 import { User, MapPin, Users, Briefcase, Link2, Camera } from "lucide-react";
 import { Card } from "./ui/card";
 import { defaultProfile } from "@/utils/profileGenerator";
+import { useState, useEffect } from "react";
+import { toast } from "./ui/use-toast";
+import { generateProfile } from "@/utils/profileGenerator";
 
 const ProfileCard = () => {
+  const [profile, setProfile] = useState(defaultProfile);
+
+  // Update profile data every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newProfile = generateProfile();
+      setProfile(newProfile);
+      toast({
+        description: "Profile updated with new information",
+        duration: 2000,
+      });
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Card className="overflow-hidden">
       <div className="h-24 bg-gradient-to-r from-qudpro-primary to-blue-700"></div>
@@ -19,27 +38,27 @@ const ProfileCard = () => {
         <div className="space-y-4">
           <div>
             <h3 className="text-xl font-semibold text-gray-900 hover:text-qudpro-primary cursor-pointer">
-              {defaultProfile.name}
+              {profile.name}
             </h3>
-            <p className="text-sm text-gray-600">{defaultProfile.role}</p>
+            <p className="text-sm text-gray-600">{profile.role}</p>
           </div>
           
           <div className="space-y-2 text-sm text-gray-600">
             <div className="flex items-center space-x-2">
               <Briefcase className="w-4 h-4" />
-              <span>{defaultProfile.company}</span>
+              <span>{profile.company}</span>
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
-              <span>{defaultProfile.location}</span>
+              <span>{profile.location}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Link2 className="w-4 h-4" />
-              <a href="#" className="text-blue-600 hover:underline">{defaultProfile.website}</a>
+              <a href="#" className="text-blue-600 hover:underline">{profile.website}</a>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
-              <span>{defaultProfile.connections}+ connections</span>
+              <span>{profile.connections}+ connections</span>
             </div>
           </div>
           
@@ -56,10 +75,10 @@ const ProfileCard = () => {
             <h4 className="text-sm font-medium text-gray-900 mb-2">Profile Analytics</h4>
             <div className="space-y-2 text-sm">
               <p className="text-gray-600">
-                <span className="text-qudpro-primary">{defaultProfile.views}</span> profile views
+                <span className="text-qudpro-primary">{profile.views}</span> profile views
               </p>
               <p className="text-gray-600">
-                <span className="text-qudpro-primary">{defaultProfile.impressions}</span> post impressions
+                <span className="text-qudpro-primary">{profile.impressions}</span> post impressions
               </p>
             </div>
           </div>
