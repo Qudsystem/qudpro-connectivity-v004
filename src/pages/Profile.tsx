@@ -2,9 +2,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Camera, MapPin, Briefcase, Link2, Users } from "lucide-react";
 import Hero from "@/components/Hero";
-import { defaultProfile } from "@/utils/profileGenerator";
+import { useProfile } from "@/hooks/useProfile";
 
 const Profile = () => {
+  const { profile } = useProfile();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Hero />
@@ -18,8 +20,8 @@ const Profile = () => {
                 <div className="relative -mt-16 mb-4">
                   <div className="w-32 h-32 mx-auto bg-white rounded-full border-4 border-white shadow-lg">
                     <img
-                      src="https://source.unsplash.com/random/128x128/?portrait"
-                      alt="Profile"
+                      src="https://github.com/shadcn.png"
+                      alt={profile.name}
                       className="w-full h-full rounded-full object-cover"
                     />
                   </div>
@@ -30,22 +32,22 @@ const Profile = () => {
                 
                 <div className="text-center space-y-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{defaultProfile.name}</h2>
-                    <p className="text-gray-600 dark:text-gray-400">{defaultProfile.role}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.name}</h2>
+                    <p className="text-gray-600 dark:text-gray-400">{profile.role}</p>
                   </div>
                   
                   <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center justify-center space-x-2">
                       <Briefcase className="w-4 h-4" />
-                      <span>{defaultProfile.company}</span>
+                      <span>{profile.company}</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2">
                       <MapPin className="w-4 h-4" />
-                      <span>{defaultProfile.location}</span>
+                      <span>{profile.location}</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2">
                       <Link2 className="w-4 h-4" />
-                      <a href="#" className="text-blue-600 hover:underline">{defaultProfile.website}</a>
+                      <a href="#" className="text-blue-600 hover:underline">{profile.website}</a>
                     </div>
                   </div>
                   
@@ -60,7 +62,7 @@ const Profile = () => {
             <Card className="p-6">
               <h3 className="text-xl font-semibold mb-4">About</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {defaultProfile.about}
+                {profile.about}
               </p>
             </Card>
 
@@ -73,7 +75,7 @@ const Profile = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Lead Photographer</h4>
-                    <p className="text-sm text-gray-600">{defaultProfile.company} • 2020 - Present</p>
+                    <p className="text-sm text-gray-600">{profile.company} • 2020 - Present</p>
                     <p className="text-sm text-gray-600 mt-2">
                       Leading commercial photography projects and managing a team of photographers.
                     </p>
