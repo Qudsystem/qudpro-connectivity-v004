@@ -1,65 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Camera, MapPin, Briefcase, Link2, Users, Pencil, Globe, School, Plus, MessageCircle, ThumbsUp } from "lucide-react";
+import { Camera, MapPin, Briefcase, Link2, Users, Pencil, Globe, School, Plus } from "lucide-react";
 import Hero from "@/components/Hero";
 import { useProfile } from "@/hooks/useProfile";
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { toast } from "@/components/ui/use-toast";
-import { generateProfile } from "@/utils/profileGenerator";
 
 const Profile = () => {
-  const { profile: initialProfile } = useProfile();
-  const [profile, setProfile] = useState(initialProfile);
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      content: "Excited to share my latest photography project in Cairo! 📸",
-      likes: 45,
-      comments: 12,
-      timeAgo: "2h ago"
-    },
-    {
-      id: 2,
-      content: "Great meeting with fellow photographers at QudPro Studios today! 🤝",
-      likes: 32,
-      comments: 8,
-      timeAgo: "5h ago"
-    }
-  ]);
-
-  // Update profile data periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newProfile = generateProfile();
-      setProfile(newProfile);
-      toast({
-        description: "Profile information updated",
-        duration: 2000,
-      });
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleLike = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId ? { ...post, likes: post.likes + 1 } : post
-    ));
-    toast({
-      description: "Post liked!",
-      duration: 1500,
-    });
-  };
-
-  const handleComment = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId ? { ...post, comments: post.comments + 1 } : post
-    ));
-    toast({
-      description: "Comment added!",
-      duration: 1500,
-    });
-  };
+  const { profile } = useProfile();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -78,7 +24,7 @@ const Profile = () => {
                 <div className="relative">
                   <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-lg">
                     <img
-                      src={profile.avatar || "https://github.com/shadcn.png"}
+                      src="https://github.com/shadcn.png"
                       alt={profile.name}
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -88,9 +34,7 @@ const Profile = () => {
                   </button>
                 </div>
                 <div className="ml-4 mb-2">
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                    {profile.name}
-                  </h1>
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{profile.name}</h1>
                   <p className="text-lg text-gray-600 dark:text-gray-400">{profile.role}</p>
                   <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
                     <MapPin className="w-4 h-4" />
@@ -147,39 +91,47 @@ const Profile = () => {
 
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Posts Section */}
+            {/* Experience Section */}
             <Card className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold">Posts</h3>
-                <Button variant="outline" size="sm">
-                  <Plus className="w-4 h-4 mr-2" /> Create Post
+                <h3 className="text-lg font-semibold">Experience</h3>
+                <Button variant="ghost" size="sm">
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
               <div className="space-y-6">
-                {posts.map((post) => (
-                  <div key={post.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <p className="text-gray-800 dark:text-gray-200 mb-3">{post.content}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex space-x-4">
-                        <button 
-                          onClick={() => handleLike(post.id)}
-                          className="flex items-center space-x-1 hover:text-blue-600"
-                        >
-                          <ThumbsUp className="w-4 h-4" />
-                          <span>{post.likes} Likes</span>
-                        </button>
-                        <button 
-                          onClick={() => handleComment(post.id)}
-                          className="flex items-center space-x-1 hover:text-blue-600"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>{post.comments} Comments</span>
-                        </button>
-                      </div>
-                      <span>{post.timeAgo}</span>
-                    </div>
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Briefcase className="w-6 h-6 text-gray-600" />
                   </div>
-                ))}
+                  <div>
+                    <h4 className="font-semibold">Lead Photographer</h4>
+                    <p className="text-sm text-gray-600">{profile.company} • 2020 - Present</p>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Leading commercial photography projects and managing a team of photographers.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Education Section */}
+            <Card className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold">Education</h3>
+                <Button variant="ghost" size="sm">
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <School className="w-6 h-6 text-gray-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold">Cairo University</h4>
+                  <p className="text-sm text-gray-600">Bachelor's in Photography and Visual Arts</p>
+                  <p className="text-sm text-gray-600">2016 - 2020</p>
+                </div>
               </div>
             </Card>
           </div>

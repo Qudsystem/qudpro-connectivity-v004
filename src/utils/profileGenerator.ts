@@ -1,3 +1,16 @@
+interface Profile {
+  name: string;
+  role: string;
+  company: string;
+  location: string;
+  website: string;
+  email: string;
+  connections: number;
+  views: number;
+  impressions: number;
+  about: string;
+}
+
 const arabicNames = [
   "Ahmed Hassan",
   "Mohamed Ali",
@@ -70,26 +83,6 @@ const locations = [
   "Marsa Alam, Egypt"
 ];
 
-export interface Profile {
-  name: string;
-  role: string;
-  company: string;
-  location: string;
-  website: string;
-  email: string;
-  connections: number;
-  views: number;
-  impressions: number;
-  about: string;
-  avatar?: string;
-}
-
-const aboutTemplates = [
-  "Professional {role} with extensive experience in the Egyptian market. Based in {location} and currently working at {company}. Passionate about capturing the essence of Egyptian culture and landscapes through the lens.",
-  "Experienced {role} specializing in Egyptian visual storytelling. Currently contributing to {company}'s success in {location}. Dedicated to showcasing Egypt's beauty through professional photography.",
-  "Creative {role} based in {location}, bringing Egyptian stories to life through visual media. Leading projects at {company} with a focus on cultural preservation and modern interpretation.",
-];
-
 export const generateProfile = (): Profile => {
   const randomIndex = Math.floor(Math.random() * arabicNames.length);
   const name = arabicNames[randomIndex];
@@ -97,12 +90,6 @@ export const generateProfile = (): Profile => {
   const company = companies[Math.floor(Math.random() * companies.length)];
   const location = locations[Math.floor(Math.random() * locations.length)];
   const username = name.toLowerCase().replace(' ', '');
-  
-  const aboutTemplate = aboutTemplates[Math.floor(Math.random() * aboutTemplates.length)];
-  const about = aboutTemplate
-    .replace('{role}', role.toLowerCase())
-    .replace('{location}', location)
-    .replace('{company}', company);
 
   return {
     name,
@@ -114,8 +101,7 @@ export const generateProfile = (): Profile => {
     connections: Math.floor(Math.random() * 900) + 100,
     views: Math.floor(Math.random() * 100) + 1,
     impressions: Math.floor(Math.random() * 200) + 1,
-    about,
-    avatar: `https://source.unsplash.com/random/200x200/?portrait&sig=${Date.now()}`,
+    about: `Professional ${role.toLowerCase()} with extensive experience in the Egyptian market. Based in ${location} and currently working at ${company}. Passionate about capturing the essence of Egyptian culture and landscapes through the lens.`
   };
 };
 
