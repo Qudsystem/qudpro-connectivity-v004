@@ -1,13 +1,23 @@
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, Link2, Send } from "lucide-react";
 import { Card } from "./ui/card";
 import { toast } from "./ui/use-toast";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Post } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import type { Post, Comment } from "@/types";
 
 interface PostCardProps {
   post: Post;
@@ -18,6 +28,47 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) => {
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState<Comment[]>(post.comments || []);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const postUrl = `${window.location.origin}/post/${post.id}`;
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+    
+    const comment: Comment = {
+      id: Date.now(),
+      content: newComment,
+      author: {
+        name: "Current User",
+        avatar: "https://github.com/shadcn.png",
+        role: "Software Engineer"
+      },
+      timeAgo: "just now",
+    };
+
+    setComments([...comments, comment]);
+    setNewComment("");
+    toast({
+      description: "Comment added successfully!",
+      duration: 2000,
+    });
+  };
+
+  const handleShare = () => {
+    setShowShareDialog(true);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(postUrl);
+    toast({
+      description: "Link copied to clipboard!",
+      duration: 2000,
+    });
+    setShowShareDialog(false);
+  };
+
   return (
     <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
@@ -30,7 +81,7 @@ const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) =>
               loading="lazy"
             />
             <div>
-              <h3 className="font-medium text-gray-900 hover:text-qudpro-primary cursor-pointer">
+              <h3 className="font-medium text-white hover:text-qudpro-primary cursor-pointer">
                 {post.author.name}
               </h3>
               <div className="text-sm text-gray-500">
@@ -85,16 +136,74 @@ const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) =>
               <ThumbsUp className="w-5 h-5" />
               <span>{isLiked ? post.likes + 1 : post.likes}</span>
             </button>
-            <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+            <button 
+              className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
+              onClick={() => setShowComments(!showComments)}
+            >
               <MessageCircle className="w-5 h-5" />
-              <span>{post.comments}</span>
+              <span>{comments.length}</span>
             </button>
           </div>
-          <button className="hover:text-blue-600 transition-colors">
+          <button 
+            className="hover:text-blue-600 transition-colors"
+            onClick={handleShare}
+          >
             <Share2 className="w-5 h-5" />
           </button>
         </div>
+
+        {showComments && (
+          <div className="mt-4 space-y-4">
+            <div className="flex items-center space-x-2">
+              <Textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+                className="flex-1"
+              />
+              <Button onClick={handleAddComment}>
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <div key={comment.id} className="flex space-x-3">
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium text-white">{comment.author.name}</h4>
+                      <span className="text-xs text-gray-500">{comment.timeAgo}</span>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">{comment.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Post</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Input value={postUrl} readOnly />
+              <Button onClick={copyLink}>
+                <Link2 className="w-4 h-4 mr-2" />
+                Copy
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

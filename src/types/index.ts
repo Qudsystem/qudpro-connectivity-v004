@@ -1,5 +1,16 @@
 import { ReactNode } from "react";
 
+export interface Comment {
+  id: number;
+  content: string;
+  author: {
+    name: string;
+    avatar: string;
+    role: string;
+  };
+  timeAgo: string;
+}
+
 export interface Post {
   id: number;
   title: string;
@@ -12,7 +23,7 @@ export interface Post {
     avatar: string;
   };
   likes: number;
-  comments: number;
+  comments: Comment[];
   timeAgo: string;
   isUserPost?: boolean;
 }
