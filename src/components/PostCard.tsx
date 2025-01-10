@@ -1,4 +1,4 @@
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, Link2, Send } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, Link2, Send, Pin } from "lucide-react";
 import { Card } from "./ui/card";
 import { toast } from "./ui/use-toast";
 import { useState } from "react";
@@ -24,10 +24,11 @@ interface PostCardProps {
   onLike: (postId: number) => void;
   onEdit: (post: Post) => void;
   onDelete: (postId: number) => void;
+  onPin?: (postId: number) => void;
   isLiked: boolean;
 }
 
-const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) => {
+const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>(post.comments || []);
@@ -69,8 +70,18 @@ const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) =>
     setShowShareDialog(false);
   };
 
+  const handlePin = () => {
+    if (onPin) {
+      onPin(post.id);
+      toast({
+        description: post.isPinned ? "Post unpinned" : "Post pinned to your profile",
+        duration: 2000,
+      });
+    }
+  };
+
   return (
-    <Card className="overflow-hidden animate-fade-in">
+    <Card className={`overflow-hidden animate-fade-in ${post.isPinned ? 'border-2 border-qudpro-primary' : ''}`}>
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -99,6 +110,12 @@ const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) =>
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit
               </DropdownMenuItem>
+              {onPin && (
+                <DropdownMenuItem onClick={handlePin}>
+                  <Pin className="w-4 h-4 mr-2" />
+                  {post.isPinned ? 'Unpin' : 'Pin'}
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem 
                 onClick={() => {
                   onDelete(post.id);

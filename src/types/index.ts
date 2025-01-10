@@ -26,6 +26,7 @@ export interface Post {
   comments: Comment[];
   timeAgo: string;
   isUserPost?: boolean;
+  isPinned?: boolean;
 }
 
 export interface PlatformStats {

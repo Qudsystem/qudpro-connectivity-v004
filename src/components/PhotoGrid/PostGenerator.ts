@@ -1,4 +1,4 @@
-import type { Post } from "@/types";
+import type { Post, Comment } from "@/types";
 
 const egyptianFirstNames = [
   'Ahmed', 'Mohamed', 'Sara', 'Nour', 'Hassan', 'Fatima', 'Youssef', 'Mariam', 'Omar', 'Layla',
@@ -44,6 +44,19 @@ const getRandomTimeAgo = () => {
   return getRandomElement(times);
 };
 
+const generateRandomComments = (count: number): Comment[] => {
+  return Array.from({ length: count }, () => ({
+    id: Date.now() + Math.random(),
+    content: getRandomElement(egyptianDescriptions),
+    author: {
+      name: `${getRandomElement(egyptianFirstNames)} ${getRandomElement(egyptianLastNames)}`,
+      role: getRandomElement(egyptianRoles),
+      avatar: `https://source.unsplash.com/random/40x40/?portrait&sig=${Date.now()}`
+    },
+    timeAgo: getRandomTimeAgo()
+  }));
+};
+
 export const generateRandomPost = (index: number): Post => {
   const id = Date.now() + index;
   return {
@@ -58,8 +71,9 @@ export const generateRandomPost = (index: number): Post => {
       avatar: `https://source.unsplash.com/random/40x40/?portrait&sig=${id}`
     },
     likes: Math.floor(Math.random() * 500) + 50,
-    comments: Math.floor(Math.random() * 100) + 10,
-    timeAgo: getRandomTimeAgo()
+    comments: generateRandomComments(Math.floor(Math.random() * 5) + 1),
+    timeAgo: getRandomTimeAgo(),
+    isPinned: false
   };
 };
 
