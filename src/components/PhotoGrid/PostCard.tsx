@@ -94,12 +94,30 @@ const PostCard = ({ post, onLike, onEdit, onDelete, isLiked }: PostCardProps) =>
             </button>
             <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
               <MessageCircle className="w-5 h-5" />
-              <span>{post.comments}</span>
+              <span>{post.comments.length}</span>
             </button>
           </div>
           <button className="hover:text-blue-600 transition-colors">
             <Share2 className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Comments Section */}
+        <div className="mt-4 space-y-4">
+          {post.comments.map((comment) => (
+            <div key={comment.id} className="flex space-x-3 text-sm">
+              <img
+                src={comment.author.avatar}
+                alt={comment.author.name}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <div>
+                <div className="font-medium">{comment.author.name}</div>
+                <p className="text-gray-600">{comment.content}</p>
+                <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </Card>

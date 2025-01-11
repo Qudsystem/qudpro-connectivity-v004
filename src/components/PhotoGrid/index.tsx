@@ -4,7 +4,7 @@ import { Card } from "../ui/card";
 import type { Post } from "@/types";
 import PostList from "../PostList";
 import { usePosts } from "@/hooks/usePosts";
-import { generateRandomPost } from "@/utils/postGenerators";
+import { generateRandomPost } from "./PostGenerator";
 import { toast } from "@/components/ui/use-toast";
 
 const PhotoGrid = () => {
@@ -18,7 +18,7 @@ const PhotoGrid = () => {
       setIsLoading(true);
       try {
         // Generate initial random posts
-        const randomPosts = Array.from({ length: 5 }, () => generateRandomPost());
+        const randomPosts = Array.from({ length: 5 }, (_, index) => generateRandomPost(index));
         
         // Combine user posts with random posts and sort by timestamp
         const combined = [...userPosts, ...randomPosts].sort((a, b) => {
@@ -43,7 +43,7 @@ const PhotoGrid = () => {
 
     // Add new random posts periodically
     const interval = setInterval(() => {
-      const newPost = generateRandomPost();
+      const newPost = generateRandomPost(Date.now());
       setAllPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]); // Keep only last 10 posts
       toast({
         description: "New post added to your feed!",
