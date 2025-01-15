@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,24 +10,44 @@ export const PostCreator = () => {
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { createPost } = usePosts();
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
         toast({
-          title: "Error",
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
           description: "Image size should be less than 5MB",
           variant: "destructive",
         });
         return;
       }
+
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Error",
+          description: "Failed to read image file",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -45,12 +65,13 @@ export const PostCreator = () => {
     if (!content.trim() && !selectedImage) {
       toast({
         description: "Please add some content or an image to post",
-        duration: 3000,
+        variant: "destructive",
       });
       return;
     }
 
     try {
+      setIsSubmitting(true);
       const newPost = {
         description: content,
         imageUrl: imagePreview || 'https://source.unsplash.com/random/800x600/?egypt,business',
@@ -58,13 +79,30 @@ export const PostCreator = () => {
           name: 'John Doe',
           role: 'Software Engineer at QudSystem',
           avatar: 'https://github.com/shadcn.png'
+        },
+        likes: 0,
+        comments: [],
+        timeAgo: 'Just now',
+        category: 'General',
+        title: content.slice(0, 50) + (content.length > 50 ? '...' : ''),
+        analysis: {
+          engagement: 0,
+          reach: 0,
+          sentiment: 'neutral',
+          topics: ['General'],
+          timestamp: new Date().toISOString()
         }
       };
 
       await createPost(newPost);
+      
+      // Reset form
       setContent('');
       setSelectedImage(null);
       setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       
       toast({
         description: "Post created successfully!",
@@ -76,6 +114,8 @@ export const PostCreator = () => {
         description: "Failed to create post. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -90,7 +130,8 @@ export const PostCreator = () => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Share your thoughts or photos..."
-          className="min-h-[60px] flex-1"
+          className="min-h-[60px] flex-1 resize-none"
+          disabled={isSubmitting}
         />
       </div>
 
@@ -104,6 +145,7 @@ export const PostCreator = () => {
           <button
             onClick={removeImage}
             className="absolute top-2 right-2 p-1 bg-gray-800/70 rounded-full text-white hover:bg-gray-900/70 transition-colors"
+            disabled={isSubmitting}
           >
             <X className="h-5 w-5" />
           </button>
@@ -118,18 +160,30 @@ export const PostCreator = () => {
             accept="image/*"
             onChange={handleImageSelect}
             className="hidden"
+            disabled={isSubmitting}
           />
           <Button
             variant="ghost"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
+            disabled={isSubmitting}
           >
             <Camera className="h-5 w-5 mr-2" />
             Add Photo
           </Button>
         </div>
-        <Button onClick={handleSubmit}>
-          Post
+        <Button 
+          onClick={handleSubmit} 
+          disabled={isSubmitting || (!content.trim() && !selectedImage)}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Posting...
+            </>
+          ) : (
+            'Post'
+          )}
         </Button>
       </div>
     </div>
