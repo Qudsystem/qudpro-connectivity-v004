@@ -88,7 +88,7 @@ export const PostCreator = () => {
         analysis: {
           engagement: 0,
           reach: 0,
-          sentiment: 'neutral',
+          sentiment: 'neutral' as const,
           topics: ['General'],
           timestamp: new Date().toISOString()
         }
