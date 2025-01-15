@@ -1,4 +1,27 @@
-import { ReactNode } from "react";
+export interface ProfileType {
+  id: string;
+  name: string;
+  role: string;
+  avatar?: string;
+  company: string;
+  location: string;
+  website: string;
+  email: string;
+  connections: number;
+  views: number;
+  about: string;
+  experience?: {
+    title: string;
+    company: string;
+    period: string;
+    description: string;
+  }[];
+  education?: {
+    school: string;
+    degree: string;
+    period: string;
+  }[];
+}
 
 export interface Comment {
   id: number;
@@ -26,30 +49,4 @@ export interface Post {
   comments: Comment[];
   timeAgo: string;
   isUserPost?: boolean;
-  isPinned?: boolean;
-  analysis?: PostAnalysis;
-}
-
-export interface PostAnalysis {
-  engagement: number;
-  reach: number;
-  sentiment: 'positive' | 'neutral' | 'negative';
-  topics: string[];
-  timestamp: string;
-}
-
-export interface PlatformStats {
-  professionals: number;
-  jobsPosted: number;
-  articles: number;
-  upcomingEvents: number;
-}
-
-export interface WorkItem {
-  id: number;
-  title: string;
-  description: string;
-  icon: ReactNode;
-  count: number;
-  type: "project" | "content" | "event" | "group";
 }
