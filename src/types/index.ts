@@ -9,6 +9,7 @@ export interface ProfileType {
   email: string;
   connections: number;
   views: number;
+  impressions: number;  // Added this field
   about: string;
   experience?: {
     title: string;
