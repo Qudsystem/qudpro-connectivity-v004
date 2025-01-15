@@ -1,87 +1,35 @@
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, Link2, Send, Pin } from "lucide-react";
 import { Card } from "./ui/card";
-import { toast } from "./ui/use-toast";
-import { useState } from "react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain } from "lucide-react";
+import type { Post } from "@/types";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import type { Post, Comment } from "@/types";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PostCardProps {
   post: Post;
   onLike: (postId: number) => void;
   onEdit: (post: Post) => void;
   onDelete: (postId: number) => void;
-  onPin?: (postId: number) => void;
   isLiked: boolean;
 }
 
-const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardProps) => {
-  const [showComments, setShowComments] = useState(false);
-  const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState<Comment[]>(post.comments || []);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  const postUrl = `${window.location.origin}/post/${post.id}`;
-
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
-    
-    const comment: Comment = {
-      id: Date.now(),
-      content: newComment,
-      author: {
-        name: "Current User",
-        avatar: "https://github.com/shadcn.png",
-        role: "Software Engineer"
-      },
-      timeAgo: "just now",
-    };
-
-    setComments([...comments, comment]);
-    setNewComment("");
-    toast({
-      description: "Comment added successfully!",
-      duration: 2000,
-    });
-  };
-
-  const handleShare = () => {
-    setShowShareDialog(true);
-  };
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(postUrl);
-    toast({
-      description: "Link copied to clipboard!",
-      duration: 2000,
-    });
-    setShowShareDialog(false);
-  };
-
-  const handlePin = () => {
-    if (onPin) {
-      onPin(post.id);
-      toast({
-        description: post.isPinned ? "Post unpinned" : "Post pinned to your profile",
-        duration: 2000,
-      });
+const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
+  const getSentimentColor = (sentiment: string) => {
+    switch (sentiment) {
+      case 'positive':
+        return 'text-green-500';
+      case 'negative':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
   return (
-    <Card className={`overflow-hidden animate-fade-in ${post.isPinned ? 'border-2 border-qudpro-primary' : ''}`}>
+    <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -89,10 +37,9 @@ const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardPr
               src={post.author.avatar}
               alt={post.author.name}
               className="w-12 h-12 rounded-full object-cover"
-              loading="lazy"
             />
             <div>
-              <h3 className="font-medium text-white hover:text-qudpro-primary cursor-pointer">
+              <h3 className="font-medium text-gray-900 hover:text-qudpro-primary cursor-pointer">
                 {post.author.name}
               </h3>
               <div className="text-sm text-gray-500">
@@ -101,36 +48,9 @@ const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardPr
               </div>
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="text-gray-400 hover:text-gray-600">
-              <MoreHorizontal className="w-5 h-5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => onEdit(post)}>
-                <Pencil className="w-4 h-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              {onPin && (
-                <DropdownMenuItem onClick={handlePin}>
-                  <Pin className="w-4 h-4 mr-2" />
-                  {post.isPinned ? 'Unpin' : 'Pin'}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem 
-                onClick={() => {
-                  onDelete(post.id);
-                  toast({
-                    description: "Post deleted",
-                    duration: 2000,
-                  });
-                }}
-                className="text-red-600"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <button className="text-gray-400 hover:text-gray-600">
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
         </div>
         
         <p className="text-gray-600 mb-4">{post.description}</p>
@@ -142,6 +62,60 @@ const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardPr
           loading="lazy"
         />
         
+        {post.analysis && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-sm">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center space-x-2">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Engagement: {post.analysis.engagement}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Post engagement metric</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center space-x-2">
+                    <Users className="w-4 h-4" />
+                    <span>Reach: {post.analysis.reach}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total reach of this post</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="flex items-center space-x-2">
+                    <Brain className="w-4 h-4" />
+                    <span className={getSentimentColor(post.analysis.sentiment)}>
+                      {post.analysis.sentiment.charAt(0).toUpperCase() + post.analysis.sentiment.slice(1)}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Content sentiment analysis</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {post.analysis.topics.map((topic, index) => (
+                <span
+                  key={index}
+                  className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                >
+                  #{topic.replace(/\s+/g, '')}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div className="mt-4 flex items-center justify-between text-gray-500">
           <div className="flex space-x-6">
             <button 
@@ -151,76 +125,36 @@ const PostCard = ({ post, onLike, onEdit, onDelete, onPin, isLiked }: PostCardPr
               onClick={() => onLike(post.id)}
             >
               <ThumbsUp className="w-5 h-5" />
-              <span>{isLiked ? post.likes + 1 : post.likes}</span>
+              <span>{post.likes}</span>
             </button>
-            <button 
-              className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
-              onClick={() => setShowComments(!showComments)}
-            >
+            <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
               <MessageCircle className="w-5 h-5" />
-              <span>{comments.length}</span>
+              <span>{post.comments.length}</span>
             </button>
           </div>
-          <button 
-            className="hover:text-blue-600 transition-colors"
-            onClick={handleShare}
-          >
+          <button className="hover:text-blue-600 transition-colors">
             <Share2 className="w-5 h-5" />
           </button>
         </div>
 
-        {showComments && (
-          <div className="mt-4 space-y-4">
-            <div className="flex items-center space-x-2">
-              <Textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment..."
-                className="flex-1"
+        {/* Comments Section */}
+        <div className="mt-4 space-y-4">
+          {post.comments.map((comment) => (
+            <div key={comment.id} className="flex space-x-3 text-sm">
+              <img
+                src={comment.author.avatar}
+                alt={comment.author.name}
+                className="w-8 h-8 rounded-full object-cover"
               />
-              <Button onClick={handleAddComment}>
-                <Send className="w-4 h-4" />
-              </Button>
+              <div>
+                <div className="font-medium">{comment.author.name}</div>
+                <p className="text-gray-600">{comment.content}</p>
+                <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+              </div>
             </div>
-            
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <img
-                    src={comment.author.avatar}
-                    alt={comment.author.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-medium text-white">{comment.author.name}</h4>
-                      <span className="text-xs text-gray-500">{comment.timeAgo}</span>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1">{comment.content}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
-
-      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Share Post</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Input value={postUrl} readOnly />
-              <Button onClick={copyLink}>
-                <Link2 className="w-4 h-4 mr-2" />
-                Copy
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 };

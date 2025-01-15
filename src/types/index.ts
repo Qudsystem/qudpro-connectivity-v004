@@ -27,6 +27,15 @@ export interface Post {
   timeAgo: string;
   isUserPost?: boolean;
   isPinned?: boolean;
+  analysis?: PostAnalysis;
+}
+
+export interface PostAnalysis {
+  engagement: number;
+  reach: number;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  topics: string[];
+  timestamp: string;
 }
 
 export interface PlatformStats {
