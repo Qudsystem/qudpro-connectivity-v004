@@ -1,108 +1,35 @@
-interface Profile {
-  name: string;
-  role: string;
-  company: string;
-  location: string;
-  website: string;
-  email: string;
-  connections: number;
-  views: number;
-  impressions: number;
-  about: string;
-}
+import { ProfileType } from "@/types";
 
-const arabicNames = [
-  "Ahmed Hassan",
-  "Mohamed Ali",
-  "Omar Ibrahim",
-  "Youssef Ahmed",
-  "Khaled Mohamed",
-  "Mahmoud Samir",
-  "Karim Adel",
-  "Mostafa Ibrahim",
-  "Amr Yasser",
-  "Tarek Mahmoud",
-  "Nour El Din",
-  "Ziad Ahmed",
-  "Hossam Hassan",
-  "Sherif Mohamed",
-  "Ayman Khalil"
-];
-
-const roles = [
-  "Professional Photographer",
-  "Architectural Photographer",
-  "Commercial Photographer",
-  "Wedding Photographer",
-  "Fashion Photographer",
-  "Portrait Photographer",
-  "Event Photographer",
-  "Product Photographer",
-  "Travel Photographer",
-  "Food Photographer",
-  "Creative Director",
-  "Visual Artist",
-  "Photography Consultant",
-  "Studio Manager",
-  "Digital Imaging Specialist"
-];
-
-const companies = [
-  "Cairo Art Studio",
-  "Egyptian Lens",
-  "Pyramid Pictures",
-  "Nile Photography",
-  "Alexandria Visual Arts",
-  "Delta Images",
-  "Luxor Photography",
-  "Aswan Studios",
-  "Red Sea Media",
-  "Giza Photography",
-  "QudPro Studios",
-  "Pharaoh Media Group",
-  "Mediterranean Visuals",
-  "Desert Light Photography",
-  "Valley of Kings Studio"
-];
-
-const locations = [
-  "Cairo, Egypt",
-  "Alexandria, Egypt",
-  "Giza, Egypt",
-  "Luxor, Egypt",
-  "Aswan, Egypt",
-  "Hurghada, Egypt",
-  "Sharm El Sheikh, Egypt",
-  "Mansoura, Egypt",
-  "Port Said, Egypt",
-  "Ismailia, Egypt",
-  "6th of October City, Egypt",
-  "New Cairo, Egypt",
-  "El Gouna, Egypt",
-  "Dahab, Egypt",
-  "Marsa Alam, Egypt"
-];
-
-export const generateProfile = (): Profile => {
-  const randomIndex = Math.floor(Math.random() * arabicNames.length);
-  const name = arabicNames[randomIndex];
-  const role = roles[Math.floor(Math.random() * roles.length)];
-  const company = companies[Math.floor(Math.random() * companies.length)];
-  const location = locations[Math.floor(Math.random() * locations.length)];
-  const username = name.toLowerCase().replace(' ', '');
-
-  return {
-    name,
-    role,
-    company,
-    location,
-    website: `${username}.qudpro.com`,
-    email: `${username}@qudpro.com`,
-    connections: Math.floor(Math.random() * 900) + 100,
-    views: Math.floor(Math.random() * 100) + 1,
-    impressions: Math.floor(Math.random() * 200) + 1,
-    about: `Professional ${role.toLowerCase()} with extensive experience in the Egyptian market. Based in ${location} and currently working at ${company}. Passionate about capturing the essence of Egyptian culture and landscapes through the lens.`
-  };
+export const defaultProfile: ProfileType = {
+  id: "1",  // Added missing id field
+  name: "Ahmed Hassan",
+  role: "Senior Software Engineer",
+  company: "QudSystem",
+  location: "Cairo, Egypt",
+  website: "https://qudsystem.com",
+  email: "ahmed.hassan@qudsystem.com",
+  connections: 500,
+  views: 1200,
+  about: "Experienced software engineer specializing in web development and cloud solutions. Passionate about building scalable applications and mentoring junior developers.",
+  experience: [
+    {
+      title: "Senior Software Engineer",
+      company: "QudSystem",
+      period: "2020 - Present",
+      description: "Leading development of enterprise web applications"
+    },
+    {
+      title: "Software Engineer",
+      company: "Cairo Tech",
+      period: "2018 - 2020",
+      description: "Full-stack development of web applications"
+    }
+  ],
+  education: [
+    {
+      school: "Cairo University",
+      degree: "Bachelor's in Computer Science",
+      period: "2014 - 2018"
+    }
+  ]
 };
-
-export const defaultProfile = generateProfile();

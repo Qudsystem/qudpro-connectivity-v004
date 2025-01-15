@@ -34,6 +34,14 @@ export interface Comment {
   timeAgo: string;
 }
 
+export interface PostAnalysis {
+  engagement: number;
+  reach: number;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  topics: string[];
+  timestamp: string;
+}
+
 export interface Post {
   id: number;
   title: string;
@@ -49,4 +57,21 @@ export interface Post {
   comments: Comment[];
   timeAgo: string;
   isUserPost?: boolean;
+  analysis?: PostAnalysis;
+}
+
+export interface WorkItem {
+  id: number;
+  title: string;
+  icon: React.ReactNode;
+  description: string;
+  count: number;
+  type: 'project' | 'content' | 'event' | 'group';
+}
+
+export interface PlatformStats {
+  professionals: number;
+  jobsPosted: number;
+  articles: number;
+  upcomingEvents: number;
 }

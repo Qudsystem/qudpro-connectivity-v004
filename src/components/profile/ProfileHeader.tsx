@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, MapPin, Plus, Pencil } from "lucide-react";
 import { ProfileType } from "@/types";
 import { toast } from "@/components/ui/use-toast";
+import { Card } from "@/components/ui/card";
 
 interface ProfileHeaderProps {
   profile: ProfileType;
