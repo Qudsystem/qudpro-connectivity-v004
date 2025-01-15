@@ -27,8 +27,19 @@ const ProfileCard = () => {
       <div className="h-24 bg-gradient-to-r from-qudpro-primary to-blue-700"></div>
       <div className="px-6 pb-6">
         <div className="relative -mt-12 mb-4">
-          <div className="w-24 h-24 bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg">
-            <User className="w-12 h-12 text-gray-400" />
+          <div className="w-24 h-24 bg-white rounded-full border-4 border-white flex items-center justify-center shadow-lg overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
+              alt={profile.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7";
+                toast({
+                  description: "Profile image failed to load, showing fallback image",
+                  duration: 2000,
+                });
+              }}
+            />
           </div>
           <button className="absolute bottom-0 right-0 bg-white rounded-full p-1.5 shadow-lg border border-gray-200">
             <Camera className="w-4 h-4 text-gray-600" />
