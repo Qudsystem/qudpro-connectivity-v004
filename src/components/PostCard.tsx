@@ -1,6 +1,10 @@
 import { Card } from "./ui/card";
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain } from "lucide-react";
-import type { Post } from "@/types";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, X } from "lucide-react";
+import type { Post, Comment } from "@/types";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -11,12 +15,34 @@ import {
 interface PostCardProps {
   post: Post;
   onLike: (postId: number) => void;
-  onEdit: (post: Post) => void;
-  onDelete: (postId: number) => void;
+  onComment: (postId: number, comment: Comment) => void;
+  onShare: (postId: number) => void;
+  onProfileClick: (username: string) => void;
   isLiked: boolean;
 }
 
-const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
+const PostCard = ({ post, onLike, onComment, onShare, onProfileClick, isLiked }: PostCardProps) => {
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
+
+  const handleSubmitComment = () => {
+    if (!newComment.trim()) return;
+
+    const comment: Comment = {
+      id: Date.now(),
+      content: newComment,
+      author: {
+        name: "أنت",
+        avatar: "https://github.com/shadcn.png",
+        role: "مستخدم"
+      },
+      timeAgo: "الآن"
+    };
+
+    onComment(post.id, comment);
+    setNewComment("");
+  };
+
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -32,14 +58,16 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
     <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <img
-              src={post.author.avatar}
-              alt={post.author.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+          <div 
+            className="flex items-center space-x-3 cursor-pointer"
+            onClick={() => onProfileClick(post.author.name)}
+          >
+            <Avatar>
+              <AvatarImage src={post.author.avatar} alt={post.author.name} />
+              <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+            </Avatar>
             <div>
-              <h3 className="font-medium text-gray-900 hover:text-qudpro-primary cursor-pointer">
+              <h3 className="font-medium text-gray-900 hover:text-qudpro-primary">
                 {post.author.name}
               </h3>
               <div className="text-sm text-gray-500">
@@ -69,10 +97,10 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
                 <Tooltip>
                   <TooltipTrigger className="flex items-center space-x-2">
                     <TrendingUp className="w-4 h-4" />
-                    <span>Engagement: {post.analysis.engagement}</span>
+                    <span>التفاعل: {post.analysis.engagement}</span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Post engagement metric</p>
+                    <p>مقياس تفاعل المنشور</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -81,10 +109,10 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
                 <Tooltip>
                   <TooltipTrigger className="flex items-center space-x-2">
                     <Users className="w-4 h-4" />
-                    <span>Reach: {post.analysis.reach}</span>
+                    <span>الوصول: {post.analysis.reach}</span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Total reach of this post</p>
+                    <p>إجمالي وصول هذا المنشور</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -94,24 +122,15 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
                   <TooltipTrigger className="flex items-center space-x-2">
                     <Brain className="w-4 h-4" />
                     <span className={getSentimentColor(post.analysis.sentiment)}>
-                      {post.analysis.sentiment.charAt(0).toUpperCase() + post.analysis.sentiment.slice(1)}
+                      {post.analysis.sentiment === 'positive' ? 'إيجابي' : 
+                       post.analysis.sentiment === 'negative' ? 'سلبي' : 'محايد'}
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Content sentiment analysis</p>
+                    <p>تحليل مشاعر المحتوى</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {post.analysis.topics.map((topic, index) => (
-                <span
-                  key={index}
-                  className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
-                >
-                  #{topic.replace(/\s+/g, '')}
-                </span>
-              ))}
             </div>
           </div>
         )}
@@ -127,33 +146,56 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
               <ThumbsUp className="w-5 h-5" />
               <span>{post.likes}</span>
             </button>
-            <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+            <button 
+              className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
+              onClick={() => setShowComments(!showComments)}
+            >
               <MessageCircle className="w-5 h-5" />
               <span>{post.comments.length}</span>
             </button>
           </div>
-          <button className="hover:text-blue-600 transition-colors">
+          <button 
+            className="hover:text-blue-600 transition-colors"
+            onClick={() => onShare(post.id)}
+          >
             <Share2 className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Comments Section */}
-        <div className="mt-4 space-y-4">
-          {post.comments.map((comment) => (
-            <div key={comment.id} className="flex space-x-3 text-sm">
-              <img
-                src={comment.author.avatar}
-                alt={comment.author.name}
-                className="w-8 h-8 rounded-full object-cover"
+        {showComments && (
+          <div className="mt-4">
+            <div className="flex space-x-2 mb-4">
+              <Input
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="اكتب تعليقاً..."
+                className="flex-1"
               />
-              <div>
-                <div className="font-medium">{comment.author.name}</div>
-                <p className="text-gray-600">{comment.content}</p>
-                <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
-              </div>
+              <Button onClick={handleSubmitComment}>تعليق</Button>
             </div>
-          ))}
-        </div>
+            
+            <div className="space-y-4">
+              {post.comments.map((comment) => (
+                <div key={comment.id} className="flex space-x-3 text-sm">
+                  <Avatar>
+                    <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                    <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div 
+                      className="font-medium cursor-pointer hover:text-qudpro-primary"
+                      onClick={() => onProfileClick(comment.author.name)}
+                    >
+                      {comment.author.name}
+                    </div>
+                    <p className="text-gray-600">{comment.content}</p>
+                    <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

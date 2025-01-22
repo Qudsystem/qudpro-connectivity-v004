@@ -5,27 +5,29 @@ import type { Post, Comment } from "@/types";
 import { useState, useEffect } from "react";
 import { toast } from "./ui/use-toast";
 import { generateRandomPosts } from "./PhotoGrid/PostGenerator";
-import PostCard from "./PhotoGrid/PostCard";
+import PostCard from "./PostCard";
+import { useNavigate } from "react-router-dom";
 
 const PhotoGrid = () => {
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<number[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadPosts = async () => {
       setLoading(true);
       try {
-        // Generate initial random posts with unique IDs
         const newPosts = generateRandomPosts(5).map((post, index) => ({
           ...post,
-          id: Date.now() + index // Ensure unique IDs
+          id: Date.now() + index,
+          comments: [] // Initialize empty comments array
         }));
         setPosts(newPosts);
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to load posts. Please try again later.",
+          title: "خطأ",
+          description: "فشل في تحميل المنشورات. يرجى المحاولة مرة أخرى.",
           duration: 3000,
         });
       } finally {
@@ -35,18 +37,17 @@ const PhotoGrid = () => {
 
     loadPosts();
 
-    // Add new posts periodically with unique IDs
     const interval = setInterval(() => {
       const newPost = {
         ...generateRandomPosts(1)[0],
-        id: Date.now() // Ensure unique ID for new post
+        id: Date.now()
       };
-      setPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]); // Keep only last 10 posts
+      setPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]);
       toast({
-        description: "New post added to your feed!",
+        description: "تم إضافة منشور جديد!",
         duration: 2000,
       });
-    }, 30000); // Add new post every 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -54,17 +55,58 @@ const PhotoGrid = () => {
   const handleLike = (postId: number) => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(prev => prev.filter(id => id !== postId));
+      setPosts(prevPosts => 
+        prevPosts.map(post => 
+          post.id === postId 
+            ? { ...post, likes: post.likes - 1 }
+            : post
+        )
+      );
       toast({
-        description: "Post unliked",
+        description: "تم إلغاء الإعجاب بالمنشور",
         duration: 2000,
       });
     } else {
       setLikedPosts(prev => [...prev, postId]);
+      setPosts(prevPosts => 
+        prevPosts.map(post => 
+          post.id === postId 
+            ? { ...post, likes: post.likes + 1 }
+            : post
+        )
+      );
       toast({
-        description: "Post liked!",
+        description: "تم الإعجاب بالمنشور!",
         duration: 2000,
       });
     }
+  };
+
+  const handleComment = (postId: number, comment: Comment) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, comments: [comment, ...post.comments] }
+          : post
+      )
+    );
+    toast({
+      description: "تم إضافة تعليق بنجاح!",
+      duration: 2000,
+    });
+  };
+
+  const handleShare = (postId: number) => {
+    const postUrl = `${window.location.origin}/post/${postId}`;
+    navigator.clipboard.writeText(postUrl);
+    toast({
+      description: "تم نسخ رابط المنشور!",
+      duration: 2000,
+    });
+  };
+
+  const handleProfileClick = (username: string) => {
+    navigate(`/profile/${username}`);
   };
 
   if (loading) {
@@ -96,8 +138,9 @@ const PhotoGrid = () => {
           post={post}
           isLiked={likedPosts.includes(post.id)}
           onLike={handleLike}
-          onEdit={() => {}}
-          onDelete={() => {}}
+          onComment={handleComment}
+          onShare={handleShare}
+          onProfileClick={handleProfileClick}
         />
       ))}
     </div>
