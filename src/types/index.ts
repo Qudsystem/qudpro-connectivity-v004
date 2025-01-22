@@ -38,7 +38,7 @@ export interface Comment {
 export interface PostAnalysis {
   engagement: number;
   reach: number;
-  sentiment: 'positive' | 'neutral' | 'negative';
+  sentiment: "positive" | "neutral" | "negative";
   topics: string[];
   timestamp: string;
 }
