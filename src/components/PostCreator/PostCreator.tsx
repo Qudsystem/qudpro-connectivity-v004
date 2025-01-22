@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
-import { Camera, X, Loader2 } from 'lucide-react';
+import { Camera, X, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { usePosts } from '@/hooks/usePosts';
+import { generateAIContent } from '@/utils/aiContentGenerator';
 
 export const PostCreator = () => {
   const [content, setContent] = useState('');
@@ -53,9 +54,12 @@ export const PostCreator = () => {
 
     setIsSubmitting(true);
     try {
+      // Generate AI-enhanced content
+      const aiContent = await generateAIContent(content);
+      
       const newPost = {
         description: content,
-        imageUrl: imagePreview || 'https://source.unsplash.com/random/800x600/?egypt,business',
+        imageUrl: imagePreview || 'https://source.unsplash.com/random/800x600/?ai,technology',
         author: {
           name: 'المستخدم الحالي',
           role: 'عضو في QudPro',
@@ -64,13 +68,13 @@ export const PostCreator = () => {
         likes: 0,
         comments: [],
         timeAgo: 'الآن',
-        category: 'عام',
+        category: 'الذكاء الاصطناعي',
         title: content.slice(0, 50),
         analysis: {
           engagement: Math.floor(Math.random() * 100),
           reach: Math.floor(Math.random() * 1000),
           sentiment: "positive" as const,
-          topics: ['QudPro', 'مصر'],
+          topics: ['الذكاء الاصطناعي', 'التكنولوجيا'],
           timestamp: new Date().toISOString()
         }
       };
@@ -155,7 +159,10 @@ export const PostCreator = () => {
               جارٍ النشر...
             </>
           ) : (
-            'نشر'
+            <>
+              <Send className="h-4 w-4 mr-2" />
+              نشر
+            </>
           )}
         </Button>
       </div>
