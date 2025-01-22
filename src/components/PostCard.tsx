@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, Send, Link, Image } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, Send, Link, Image, X } from "lucide-react";
 import type { Post, Comment } from "@/types";
 import { toast } from "./ui/use-toast";
 import { useNavigate } from "react-router-dom";
