@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, Send } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, Send, Link, Image } from "lucide-react";
 import type { Post, Comment } from "@/types";
 import { toast } from "./ui/use-toast";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +13,12 @@ import {
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PostCardProps {
   post: Post;
@@ -28,26 +29,48 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
+  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [commentImage, setCommentImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localComments, setLocalComments] = useState<Comment[]>(post.comments);
+  const [showShareLink, setShowShareLink] = useState(false);
 
-  const getSentimentColor = (sentiment: "positive" | "neutral" | "negative") => {
-    switch (sentiment) {
-      case "positive":
-        return "text-green-500";
-      case "negative":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
+  const handleProfileClick = () => {
+    navigate(`/profile/${post.author.name.toLowerCase().replace(/\s+/g, '-')}`);
+  };
+
+  const handleShare = () => {
+    const postUrl = `${window.location.origin}/post/${post.id}`;
+    navigator.clipboard.writeText(postUrl);
+    setShowShareLink(true);
+    toast({
+      description: "تم نسخ رابط المنشور",
+      duration: 2000,
+    });
+    setTimeout(() => setShowShareLink(false), 3000);
+  };
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          description: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
+          duration: 2000,
+        });
+        return;
+      }
+      setCommentImage(file);
     }
   };
 
   const handleAddComment = async () => {
-    if (!newComment.trim()) {
+    if (!newComment.trim() && !commentImage) {
       toast({
-        description: "يرجى كتابة تعليق قبل الإرسال",
+        description: "يرجى كتابة تعليق أو إضافة صورة",
         duration: 2000,
       });
       return;
@@ -55,9 +78,13 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
 
     setIsSubmitting(true);
     try {
+      // Here we would normally upload the image to a server
+      const imageUrl = commentImage ? URL.createObjectURL(commentImage) : undefined;
+      
       const comment: Comment = {
         id: Date.now(),
         content: newComment,
+        imageUrl,
         author: {
           name: "المستخدم الحالي",
           avatar: "https://github.com/shadcn.png",
@@ -68,6 +95,7 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
 
       setLocalComments([...localComments, comment]);
       setNewComment("");
+      setCommentImage(null);
       toast({
         description: "تم إضافة تعليقك بنجاح",
         duration: 2000,
@@ -83,13 +111,24 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
     }
   };
 
+  const getSentimentColor = (sentiment: "positive" | "neutral" | "negative") => {
+    switch (sentiment) {
+      case "positive":
+        return "text-green-500";
+      case "negative":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
+    }
+  };
+
   return (
     <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div 
             className="flex items-center space-x-3 cursor-pointer"
-            onClick={() => setIsProfileOpen(true)}
+            onClick={handleProfileClick}
           >
             <img
               src={post.author.avatar}
@@ -188,64 +227,119 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
               <ThumbsUp className="w-5 h-5" />
               <span>{post.likes}</span>
             </button>
-            <button className="flex items-center space-x-1 hover:text-blue-600 transition-colors">
+            <button 
+              className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
+              onClick={() => setShowComments(!showComments)}
+            >
               <MessageCircle className="w-5 h-5" />
               <span>{localComments.length}</span>
             </button>
           </div>
-          <button className="hover:text-blue-600 transition-colors">
-            <Share2 className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Add Comment Section */}
-        <div className="mt-4 flex items-start space-x-2">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="المستخدم الحالي" />
-            <AvatarFallback>MS</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <Textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="أضف تعليقاً..."
-              className="min-h-[60px] mb-2"
-            />
-            <Button 
-              onClick={handleAddComment}
-              disabled={isSubmitting}
-              className="flex items-center"
+          <div className="flex items-center space-x-2">
+            <button 
+              className="hover:text-blue-600 transition-colors relative"
+              onClick={handleShare}
             >
-              {isSubmitting ? "جارٍ الإرسال..." : (
-                <>
-                  <Send className="w-4 h-4 mr-2" />
-                  إرسال التعليق
-                </>
+              <Share2 className="w-5 h-5" />
+              {showShareLink && (
+                <div className="absolute bottom-full right-0 mb-2 p-2 bg-white shadow-lg rounded-lg text-sm">
+                  تم نسخ الرابط!
+                </div>
               )}
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Comments Section */}
-        <div className="mt-4 space-y-4">
-          {localComments.map((comment) => (
-            <div key={comment.id} className="flex space-x-3 text-sm">
-              <img
-                src={comment.author.avatar}
-                alt={comment.author.name}
-                className="w-8 h-8 rounded-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "https://source.unsplash.com/random/100x100/?portrait";
-                }}
-              />
-              <div>
-                <div className="font-medium">{comment.author.name}</div>
-                <p className="text-gray-600">{comment.content}</p>
-                <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+        {showComments && (
+          <>
+            {/* Add Comment Section */}
+            <div className="mt-4 flex items-start space-x-2">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="المستخدم الحالي" />
+                <AvatarFallback>MS</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <Textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="أضف تعليقاً..."
+                  className="min-h-[60px] mb-2"
+                />
+                <div className="flex items-center justify-between">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id={`comment-image-${post.id}`}
+                    onChange={handleImageSelect}
+                  />
+                  <label 
+                    htmlFor={`comment-image-${post.id}`}
+                    className="cursor-pointer flex items-center text-gray-500 hover:text-blue-600"
+                  >
+                    <Image className="w-5 h-5 mr-1" />
+                    إضافة صورة
+                  </label>
+                  <Button 
+                    onClick={handleAddComment}
+                    disabled={isSubmitting}
+                    className="flex items-center"
+                  >
+                    {isSubmitting ? "جارٍ الإرسال..." : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        إرسال التعليق
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {commentImage && (
+                  <div className="mt-2 relative inline-block">
+                    <img
+                      src={URL.createObjectURL(commentImage)}
+                      alt="Preview"
+                      className="max-h-20 rounded"
+                    />
+                    <button
+                      onClick={() => setCommentImage(null)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Comments Section */}
+            <div className="mt-4 space-y-4">
+              {localComments.map((comment) => (
+                <div key={comment.id} className="flex space-x-3 text-sm">
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.name}
+                    className="w-8 h-8 rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://source.unsplash.com/random/100x100/?portrait";
+                    }}
+                  />
+                  <div>
+                    <div className="font-medium">{comment.author.name}</div>
+                    <p className="text-gray-600">{comment.content}</p>
+                    {comment.imageUrl && (
+                      <img
+                        src={comment.imageUrl}
+                        alt="Comment attachment"
+                        className="mt-2 max-h-40 rounded"
+                      />
+                    )}
+                    <div className="text-gray-400 text-xs">{comment.timeAgo}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Profile Dialog */}
