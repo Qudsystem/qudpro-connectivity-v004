@@ -16,9 +16,10 @@ const PhotoGrid = () => {
     const loadPosts = async () => {
       setLoading(true);
       try {
+        // Generate initial random posts with unique IDs
         const newPosts = generateRandomPosts(5).map((post, index) => ({
           ...post,
-          id: Date.now() + index
+          id: Date.now() + index // Ensure unique IDs
         }));
         setPosts(newPosts);
       } catch (error) {
@@ -34,17 +35,18 @@ const PhotoGrid = () => {
 
     loadPosts();
 
+    // Add new posts periodically with unique IDs
     const interval = setInterval(() => {
       const newPost = {
         ...generateRandomPosts(1)[0],
-        id: Date.now()
+        id: Date.now() // Ensure unique ID for new post
       };
-      setPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]);
+      setPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]); // Keep only last 10 posts
       toast({
-        description: "تم إضافة منشور جديد!",
+        description: "New post added to your feed!",
         duration: 2000,
       });
-    }, 30000);
+    }, 30000); // Add new post every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -53,13 +55,13 @@ const PhotoGrid = () => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(prev => prev.filter(id => id !== postId));
       toast({
-        description: "تم إلغاء الإعجاب",
+        description: "Post unliked",
         duration: 2000,
       });
     } else {
       setLikedPosts(prev => [...prev, postId]);
       toast({
-        description: "تم الإعجاب بالمنشور!",
+        description: "Post liked!",
         duration: 2000,
       });
     }

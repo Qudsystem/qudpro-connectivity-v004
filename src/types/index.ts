@@ -9,7 +9,7 @@ export interface ProfileType {
   email: string;
   connections: number;
   views: number;
-  impressions: number;
+  impressions: number;  // Added this field
   about: string;
   experience?: {
     title: string;
@@ -22,13 +22,11 @@ export interface ProfileType {
     degree: string;
     period: string;
   }[];
-  posts?: Post[];
 }
 
 export interface Comment {
   id: number;
   content: string;
-  imageUrl?: string;
   author: {
     name: string;
     avatar: string;
@@ -40,7 +38,7 @@ export interface Comment {
 export interface PostAnalysis {
   engagement: number;
   reach: number;
-  sentiment: "positive" | "neutral" | "negative";
+  sentiment: 'positive' | 'neutral' | 'negative';
   topics: string[];
   timestamp: string;
 }
@@ -61,7 +59,6 @@ export interface Post {
   timeAgo: string;
   isUserPost?: boolean;
   analysis?: PostAnalysis;
-  url?: string;
 }
 
 export interface WorkItem {
@@ -78,13 +75,4 @@ export interface PlatformStats {
   jobsPosted: number;
   articles: number;
   upcomingEvents: number;
-}
-
-export interface Notification {
-  id: number;
-  type: "post" | "comment" | "like" | "connection";
-  content: string;
-  postId?: number;
-  timeAgo: string;
-  read: boolean;
 }

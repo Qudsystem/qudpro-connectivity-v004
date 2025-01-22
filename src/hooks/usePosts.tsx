@@ -19,7 +19,6 @@ const createPost = async (post: Partial<Post>): Promise<Post> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        id: Date.now(),
         ...generateRandomPost(Date.now()),
         ...post,
       });
@@ -28,6 +27,7 @@ const createPost = async (post: Partial<Post>): Promise<Post> => {
 };
 
 const updatePost = async (post: Post): Promise<Post> => {
+  // Simulate API call
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(post);
@@ -36,6 +36,7 @@ const updatePost = async (post: Post): Promise<Post> => {
 };
 
 const deletePost = async (postId: number): Promise<void> => {
+  // Simulate API call
   return new Promise((resolve) => {
     setTimeout(resolve, 1000);
   });
@@ -45,29 +46,31 @@ export const usePosts = () => {
   const queryClient = useQueryClient();
   const [editingPost, setEditingPost] = useState<Post | null>(null);
 
+  // Query for fetching posts
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
   });
 
+  // Mutation for creating posts
   const createMutation = useMutation({
     mutationFn: createPost,
     onSuccess: (newPost) => {
-      // Add new post at the beginning of the list
       queryClient.setQueryData(['posts'], (old: Post[] = []) => [newPost, ...old]);
       toast({
-        description: "تم إنشاء المنشور بنجاح!",
+        description: "Post created successfully!",
         duration: 2000,
       });
     },
     onError: () => {
       toast({
-        description: "فشل في إنشاء المنشور. حاول مرة أخرى.",
+        description: "Failed to create post. Please try again.",
         duration: 2000,
       });
     },
   });
 
+  // Mutation for updating posts
   const updateMutation = useMutation({
     mutationFn: updatePost,
     onSuccess: (updatedPost) => {
@@ -76,18 +79,19 @@ export const usePosts = () => {
       );
       setEditingPost(null);
       toast({
-        description: "تم تحديث المنشور بنجاح!",
+        description: "Post updated successfully!",
         duration: 2000,
       });
     },
     onError: () => {
       toast({
-        description: "فشل في تحديث المنشور. حاول مرة أخرى.",
+        description: "Failed to update post. Please try again.",
         duration: 2000,
       });
     },
   });
 
+  // Mutation for deleting posts
   const deleteMutation = useMutation({
     mutationFn: deletePost,
     onSuccess: (_, postId) => {
@@ -95,13 +99,13 @@ export const usePosts = () => {
         old.filter(post => post.id !== postId)
       );
       toast({
-        description: "تم حذف المنشور بنجاح!",
+        description: "Post deleted successfully!",
         duration: 2000,
       });
     },
     onError: () => {
       toast({
-        description: "فشل في حذف المنشور. حاول مرة أخرى.",
+        description: "Failed to delete post. Please try again.",
         duration: 2000,
       });
     },
