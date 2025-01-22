@@ -78,7 +78,6 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
 
     setIsSubmitting(true);
     try {
-      // Here we would normally upload the image to a server
       const imageUrl = commentImage ? URL.createObjectURL(commentImage) : undefined;
       
       const comment: Comment = {
@@ -93,7 +92,7 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
         timeAgo: "الآن"
       };
 
-      setLocalComments([...localComments, comment]);
+      setLocalComments(prev => [comment, ...prev]);
       setNewComment("");
       setCommentImage(null);
       toast({
@@ -252,7 +251,6 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
 
         {showComments && (
           <>
-            {/* Add Comment Section */}
             <div className="mt-4 flex items-start space-x-2">
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" alt="المستخدم الحالي" />
@@ -311,7 +309,6 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
               </div>
             </div>
 
-            {/* Comments Section */}
             <div className="mt-4 space-y-4">
               {localComments.map((comment) => (
                 <div key={comment.id} className="flex space-x-3 text-sm">
@@ -342,7 +339,6 @@ const PostCard = ({ post, onLike, isLiked }: PostCardProps) => {
         )}
       </div>
 
-      {/* Profile Dialog */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
