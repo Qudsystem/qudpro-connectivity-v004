@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { usePosts } from '@/hooks/usePosts';
+import type { Post } from '@/types';
 
 export const PostCreator = () => {
   const [content, setContent] = useState('');
@@ -17,21 +18,19 @@ export const PostCreator = () => {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         toast({
-          title: "Invalid file type",
-          description: "Please select an image file",
+          title: "خطأ في نوع الملف",
+          description: "الرجاء اختيار صورة فقط",
           variant: "destructive",
         });
         return;
       }
 
-      // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         toast({
-          title: "File too large",
-          description: "Image size should be less than 5MB",
+          title: "حجم الملف كبير جداً",
+          description: "يجب أن يكون حجم الصورة أقل من 5 ميجابايت",
           variant: "destructive",
         });
         return;
@@ -44,8 +43,8 @@ export const PostCreator = () => {
       };
       reader.onerror = () => {
         toast({
-          title: "Error",
-          description: "Failed to read image file",
+          title: "خطأ",
+          description: "فشل في قراءة الملف",
           variant: "destructive",
         });
       };
@@ -64,7 +63,7 @@ export const PostCreator = () => {
   const handleSubmit = async () => {
     if (!content.trim() && !selectedImage) {
       toast({
-        description: "Please add some content or an image to post",
+        description: "الرجاء إضافة نص أو صورة للمنشور",
         variant: "destructive",
       });
       return;
@@ -72,7 +71,7 @@ export const PostCreator = () => {
 
     try {
       setIsSubmitting(true);
-      const newPost = {
+      const newPost: Partial<Post> = {
         description: content,
         imageUrl: imagePreview || 'https://source.unsplash.com/random/800x600/?egypt,business',
         author: {
@@ -82,21 +81,20 @@ export const PostCreator = () => {
         },
         likes: 0,
         comments: [],
-        timeAgo: 'Just now',
-        category: 'General',
+        timeAgo: 'الآن',
+        category: 'عام',
         title: content.slice(0, 50) + (content.length > 50 ? '...' : ''),
         analysis: {
           engagement: 0,
           reach: 0,
-          sentiment: 'neutral',
-          topics: ['General'],
+          sentiment: 'neutral' as const,
+          topics: ['عام'],
           timestamp: new Date().toISOString()
         }
       };
 
       await createPost(newPost);
       
-      // Reset form
       setContent('');
       setSelectedImage(null);
       setImagePreview(null);
@@ -105,13 +103,13 @@ export const PostCreator = () => {
       }
       
       toast({
-        description: "Post created successfully!",
+        description: "تم نشر المنشور بنجاح!",
         duration: 2000,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to create post. Please try again.",
+        title: "خطأ",
+        description: "فشل في نشر المنشور. حاول مرة أخرى.",
         variant: "destructive",
       });
     } finally {
@@ -129,7 +127,7 @@ export const PostCreator = () => {
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Share your thoughts or photos..."
+          placeholder="شارك أفكارك أو صورك..."
           className="min-h-[60px] flex-1 resize-none"
           disabled={isSubmitting}
         />
@@ -139,7 +137,7 @@ export const PostCreator = () => {
         <div className="relative mb-4">
           <img
             src={imagePreview}
-            alt="Preview"
+            alt="معاينة"
             className="max-h-[300px] w-full object-cover rounded-lg"
           />
           <button
@@ -168,8 +166,8 @@ export const PostCreator = () => {
             onClick={() => fileInputRef.current?.click()}
             disabled={isSubmitting}
           >
-            <Camera className="h-5 w-5 mr-2" />
-            Add Photo
+            <Camera className="h-5 w-5 ml-2" />
+            إضافة صورة
           </Button>
         </div>
         <Button 
@@ -178,11 +176,11 @@ export const PostCreator = () => {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Posting...
+              <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+              جاري النشر...
             </>
           ) : (
-            'Post'
+            'نشر'
           )}
         </Button>
       </div>

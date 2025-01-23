@@ -5,12 +5,11 @@ import { toast } from "@/components/ui/use-toast";
 interface PostListProps {
   posts: Post[];
   onLike: (postId: number) => void;
-  onEdit: (post: Post) => void;
   onDelete: (postId: number) => void;
   likedPosts: number[];
 }
 
-const PostList = ({ posts, onLike, onEdit, onDelete, likedPosts }: PostListProps) => {
+const PostList = ({ posts, onLike, onDelete, likedPosts }: PostListProps) => {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
@@ -18,8 +17,26 @@ const PostList = ({ posts, onLike, onEdit, onDelete, likedPosts }: PostListProps
           key={post.id}
           post={post}
           onLike={onLike}
-          onEdit={onEdit}
-          onDelete={onDelete}
+          onComment={(postId, comment) => {
+            // Handle comment
+            toast({
+              description: "تم إضافة التعليق بنجاح",
+              duration: 2000,
+            });
+          }}
+          onShare={(postId) => {
+            // Handle share
+            const postUrl = `${window.location.origin}/post/${postId}`;
+            navigator.clipboard.writeText(postUrl);
+            toast({
+              description: "تم نسخ رابط المنشور",
+              duration: 2000,
+            });
+          }}
+          onProfileClick={(username) => {
+            // Handle profile click
+            window.location.href = `/profile/${username}`;
+          }}
           isLiked={likedPosts.includes(post.id)}
         />
       ))}
