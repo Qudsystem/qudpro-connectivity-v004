@@ -6,9 +6,31 @@ import { toast } from "./ui/use-toast";
 import { generateProfile } from "@/utils/profileGenerator";
 import { Progress } from "./ui/progress";
 
+// Utility function to calculate luminance
+const getLuminance = (r: number, g: number, b: number) => {
+  const [rs, gs, bs] = [r, g, b].map(c => {
+    c = c / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+};
+
+// Utility function to determine text color based on background
+const getTextColor = (bgColor: string) => {
+  // Convert hex to RGB
+  const hex = bgColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  
+  const luminance = getLuminance(r, g, b);
+  return luminance > 0.5 ? '#222222' : '#FFFFFF';
+};
+
 const ProfileCard = () => {
   const [profile, setProfile] = useState(defaultProfile);
-  const [profileStrength, setProfileStrength] = useState(75); // Example value
+  const [profileStrength, setProfileStrength] = useState(75);
+  const [textColor, setTextColor] = useState('#222222');
 
   // Update profile data every 30 seconds
   useEffect(() => {
@@ -22,6 +44,14 @@ const ProfileCard = () => {
     }, 30000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Update text color based on background
+  useEffect(() => {
+    const bgColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--qudpro-primary')
+      .trim();
+    setTextColor(getTextColor(bgColor || '#1a365d'));
   }, []);
 
   const skills = [
@@ -56,10 +86,18 @@ const ProfileCard = () => {
         
         <div className="space-y-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 hover:text-qudpro-primary cursor-pointer">
+            <h3 
+              className="text-xl font-semibold hover:text-qudpro-primary cursor-pointer transition-colors"
+              style={{ color: textColor }}
+            >
               {profile.name}
             </h3>
-            <p className="text-sm text-gray-600">{profile.role}</p>
+            <p 
+              className="text-sm"
+              style={{ color: textColor }}
+            >
+              {profile.role}
+            </p>
           </div>
           
           <div className="space-y-2 text-sm text-gray-600">
