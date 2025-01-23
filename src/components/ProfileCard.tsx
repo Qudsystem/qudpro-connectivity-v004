@@ -1,12 +1,14 @@
-import { User, MapPin, Users, Briefcase, Link2, Camera } from "lucide-react";
+import { User, MapPin, Users, Briefcase, Link2, Camera, Award, ChartBar } from "lucide-react";
 import { Card } from "./ui/card";
 import { defaultProfile } from "@/utils/profileGenerator";
 import { useState, useEffect } from "react";
 import { toast } from "./ui/use-toast";
 import { generateProfile } from "@/utils/profileGenerator";
+import { Progress } from "./ui/progress";
 
 const ProfileCard = () => {
   const [profile, setProfile] = useState(defaultProfile);
+  const [profileStrength, setProfileStrength] = useState(75); // Example value
 
   // Update profile data every 30 seconds
   useEffect(() => {
@@ -17,10 +19,16 @@ const ProfileCard = () => {
         description: "Profile updated with new information",
         duration: 2000,
       });
-    }, 30000); // 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
+
+  const skills = [
+    { name: "React", endorsements: 42 },
+    { name: "TypeScript", endorsements: 38 },
+    { name: "Node.js", endorsements: 25 },
+  ];
 
   return (
     <Card className="overflow-hidden">
@@ -80,6 +88,31 @@ const ProfileCard = () => {
             <button className="flex-1 border border-qudpro-primary text-qudpro-primary py-2 px-4 rounded-full hover:bg-blue-50 transition-colors">
               Message
             </button>
+          </div>
+
+          {/* Profile Strength Indicator */}
+          <div className="pt-4 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium text-gray-900">Profile Strength</h4>
+              <span className="text-sm text-qudpro-primary">{profileStrength}%</span>
+            </div>
+            <Progress value={profileStrength} className="h-2" />
+          </div>
+
+          {/* Skills Section */}
+          <div className="pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">Skills & Endorsements</h4>
+            <div className="space-y-2">
+              {skills.map((skill) => (
+                <div key={skill.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Award className="w-4 h-4 text-qudpro-primary" />
+                    <span className="text-sm text-gray-600">{skill.name}</span>
+                  </div>
+                  <span className="text-xs text-gray-500">{skill.endorsements} endorsements</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="pt-4 border-t border-gray-200">
