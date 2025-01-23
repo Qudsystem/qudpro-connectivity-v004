@@ -24,6 +24,24 @@ export interface ProfileType {
   }[];
 }
 
+export interface Skill {
+  name: string;
+  endorsements: number;
+  isEndorsed?: boolean;
+}
+
+export interface ProfileAnalytics {
+  views: number;
+  connections: number;
+  impressions: number;
+  viewsData: Array<{ date: string; views: number }>;
+}
+
+export interface ProfileStrengthData {
+  strength: number;
+  recommendations: string[];
+}
+
 export interface Comment {
   id: number;
   content: string;
