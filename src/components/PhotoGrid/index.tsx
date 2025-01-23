@@ -8,7 +8,7 @@ import { generateRandomPost } from "./PostGenerator";
 import { toast } from "@/components/ui/use-toast";
 
 const PhotoGrid = () => {
-  const { posts: userPosts, isLoading: isUserPostsLoading, createPost, updatePost, deletePost } = usePosts();
+  const { posts: userPosts, isLoading: isUserPostsLoading, createPost, deletePost } = usePosts();
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,10 +17,8 @@ const PhotoGrid = () => {
     const loadPosts = async () => {
       setIsLoading(true);
       try {
-        // Generate initial random posts
         const randomPosts = Array.from({ length: 5 }, (_, index) => generateRandomPost(index));
         
-        // Combine user posts with random posts and sort by timestamp
         const combined = [...userPosts, ...randomPosts].sort((a, b) => {
           const timeA = new Date(a.timeAgo).getTime();
           const timeB = new Date(b.timeAgo).getTime();
@@ -30,8 +28,8 @@ const PhotoGrid = () => {
         setAllPosts(combined);
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to load posts. Please try again later.",
+          title: "خطأ",
+          description: "فشل في تحميل المنشورات. يرجى المحاولة مرة أخرى.",
           duration: 3000,
         });
       } finally {
@@ -41,15 +39,14 @@ const PhotoGrid = () => {
 
     loadPosts();
 
-    // Add new random posts periodically
     const interval = setInterval(() => {
       const newPost = generateRandomPost(Date.now());
-      setAllPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]); // Keep only last 10 posts
+      setAllPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]);
       toast({
-        description: "New post added to your feed!",
+        description: "تم إضافة منشور جديد!",
         duration: 2000,
       });
-    }, 30000); // Add new post every 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [userPosts]);
@@ -58,13 +55,13 @@ const PhotoGrid = () => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(prev => prev.filter(id => id !== postId));
       toast({
-        description: "Post unliked",
+        description: "تم إلغاء الإعجاب بالمنشور",
         duration: 2000,
       });
     } else {
       setLikedPosts(prev => [...prev, postId]);
       toast({
-        description: "Post liked!",
+        description: "تم الإعجاب بالمنشور!",
         duration: 2000,
       });
     }
@@ -74,7 +71,7 @@ const PhotoGrid = () => {
     return (
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
+          <Card key={`skeleton-${i}`} className="p-6">
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Skeleton className="h-12 w-12 rounded-full" />
@@ -95,7 +92,6 @@ const PhotoGrid = () => {
     <PostList
       posts={allPosts}
       onLike={handleLike}
-      onEdit={updatePost}
       onDelete={deletePost}
       likedPosts={likedPosts}
     />

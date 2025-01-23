@@ -1,6 +1,7 @@
-import { Post } from "@/types";
+import { Post, Comment } from "@/types";
 import PostCard from "./PostCard";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface PostListProps {
   posts: Post[];
@@ -10,6 +11,28 @@ interface PostListProps {
 }
 
 const PostList = ({ posts, onLike, onDelete, likedPosts }: PostListProps) => {
+  const navigate = useNavigate();
+
+  const handleComment = (postId: number, comment: Comment) => {
+    toast({
+      description: "تم إضافة التعليق بنجاح",
+      duration: 2000,
+    });
+  };
+
+  const handleShare = (postId: number) => {
+    const postUrl = `${window.location.origin}/post/${postId}`;
+    navigator.clipboard.writeText(postUrl);
+    toast({
+      description: "تم نسخ رابط المنشور",
+      duration: 2000,
+    });
+  };
+
+  const handleProfileClick = (username: string) => {
+    navigate(`/profile/${username}`);
+  };
+
   return (
     <div className="space-y-6">
       {posts.map((post) => (
@@ -17,26 +40,9 @@ const PostList = ({ posts, onLike, onDelete, likedPosts }: PostListProps) => {
           key={post.id}
           post={post}
           onLike={onLike}
-          onComment={(postId, comment) => {
-            // Handle comment
-            toast({
-              description: "تم إضافة التعليق بنجاح",
-              duration: 2000,
-            });
-          }}
-          onShare={(postId) => {
-            // Handle share
-            const postUrl = `${window.location.origin}/post/${postId}`;
-            navigator.clipboard.writeText(postUrl);
-            toast({
-              description: "تم نسخ رابط المنشور",
-              duration: 2000,
-            });
-          }}
-          onProfileClick={(username) => {
-            // Handle profile click
-            window.location.href = `/profile/${username}`;
-          }}
+          onComment={handleComment}
+          onShare={handleShare}
+          onProfileClick={handleProfileClick}
           isLiked={likedPosts.includes(post.id)}
         />
       ))}
