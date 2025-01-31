@@ -18,6 +18,13 @@ import {
 import { useSettings } from "@/contexts/SettingsContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Settings = () => {
   const {
@@ -41,7 +48,6 @@ const Settings = () => {
   const { toast } = useToast();
 
   const handleLogout = () => {
-    // Clear settings
     localStorage.clear();
     toast({
       title: "تم تسجيل الخروج",
@@ -56,7 +62,7 @@ const Settings = () => {
         <h1 className="text-3xl font-bold text-foreground mb-8">الإعدادات</h1>
 
         {/* المظهر والتخصيص */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card text-card-foreground">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Sun className="h-5 w-5" />
             المظهر والتخصيص
@@ -77,21 +83,22 @@ const Settings = () => {
                 <Languages className="h-4 w-4" />
                 <span>اللغة</span>
               </div>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="border rounded p-1"
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-              </select>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="اختر اللغة" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ar">العربية</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="fr">Français</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </Card>
 
         {/* الإشعارات */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card text-card-foreground">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Bell className="h-5 w-5" />
             الإشعارات
@@ -131,7 +138,7 @@ const Settings = () => {
         </Card>
 
         {/* الخصوصية والأمان */}
-        <Card className="p-6">
+        <Card className="p-6 bg-card text-card-foreground">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Shield className="h-5 w-5" />
             الخصوصية والأمان
@@ -152,15 +159,16 @@ const Settings = () => {
                 <Globe className="h-4 w-4" />
                 <span>من يمكنه رؤية نشاطي</span>
               </div>
-              <select
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
-                className="border rounded p-1"
-              >
-                <option value="everyone">الجميع</option>
-                <option value="connections">جهات الاتصال فقط</option>
-                <option value="none">لا أحد</option>
-              </select>
+              <Select value={visibility} onValueChange={setVisibility}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="اختر الخصوصية" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="everyone">الجميع</SelectItem>
+                  <SelectItem value="connections">جهات الاتصال فقط</SelectItem>
+                  <SelectItem value="none">لا أحد</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </Card>
