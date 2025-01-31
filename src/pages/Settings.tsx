@@ -14,6 +14,7 @@ import {
   Volume2,
   Languages,
   LogOut,
+  ArrowLeft,
 } from "lucide-react";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useNavigate } from "react-router-dom";
@@ -56,10 +57,24 @@ const Settings = () => {
     navigate('/login');
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-foreground mb-8">الإعدادات</h1>
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            className="flex items-center gap-2 hover:bg-accent"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>رجوع</span>
+          </Button>
+          <h1 className="text-3xl font-bold text-foreground">الإعدادات</h1>
+        </div>
 
         {/* المظهر والتخصيص */}
         <Card className="p-6 bg-card text-card-foreground">
