@@ -27,10 +27,7 @@ export const ProfileDropdown = () => {
   };
 
   const handleSettingsClick = () => {
-    toast({
-      title: "Settings",
-      description: "Settings page is under construction.",
-    });
+    navigate('/settings');
   };
 
   const handleHelpClick = () => {
