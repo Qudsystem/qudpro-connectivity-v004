@@ -2,8 +2,6 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/components/ui/use-toast";
 import {
   Bell,
   Moon,
@@ -17,28 +15,39 @@ import {
   Languages,
   LogOut,
 } from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 const Settings = () => {
-  const { toast } = useToast();
-  const [darkMode, setDarkMode] = React.useState(false);
-  const [emailNotifications, setEmailNotifications] = React.useState(true);
-  const [pushNotifications, setPushNotifications] = React.useState(true);
-  const [soundEnabled, setSoundEnabled] = React.useState(true);
-  const [language, setLanguage] = React.useState("ar");
-  const [twoFactorEnabled, setTwoFactorEnabled] = React.useState(false);
+  const {
+    darkMode,
+    setDarkMode,
+    language,
+    setLanguage,
+    emailNotifications,
+    setEmailNotifications,
+    pushNotifications,
+    setPushNotifications,
+    soundEnabled,
+    setSoundEnabled,
+    twoFactorEnabled,
+    setTwoFactorEnabled,
+    visibility,
+    setVisibility,
+  } = useSettings();
 
-  const handleSaveSettings = () => {
-    toast({
-      title: "تم حفظ الإعدادات",
-      description: "تم تحديث إعدادات حسابك بنجاح",
-    });
-  };
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogout = () => {
+    // Clear settings
+    localStorage.clear();
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح",
     });
+    navigate('/login');
   };
 
   return (
@@ -143,10 +152,14 @@ const Settings = () => {
                 <Globe className="h-4 w-4" />
                 <span>من يمكنه رؤية نشاطي</span>
               </div>
-              <select className="border rounded p-1">
-                <option>الجميع</option>
-                <option>جهات الاتصال فقط</option>
-                <option>لا أحد</option>
+              <select
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+                className="border rounded p-1"
+              >
+                <option value="everyone">الجميع</option>
+                <option value="connections">جهات الاتصال فقط</option>
+                <option value="none">لا أحد</option>
               </select>
             </div>
           </div>
@@ -154,13 +167,6 @@ const Settings = () => {
 
         {/* أزرار الإجراءات */}
         <div className="flex justify-between items-center">
-          <Button
-            variant="default"
-            onClick={handleSaveSettings}
-            className="bg-qudpro-primary hover:bg-qudpro-primary/90"
-          >
-            حفظ التغييرات
-          </Button>
           <Button
             variant="destructive"
             onClick={handleLogout}
