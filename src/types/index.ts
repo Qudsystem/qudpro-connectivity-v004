@@ -46,7 +46,7 @@ export interface Comment {
   id: number;
   content: string;
   author: {
-    id: string;  // Added id field
+    id: string;
     name: string;
     avatar: string;
     role: string;
@@ -69,6 +69,7 @@ export interface Post {
   description: string;
   imageUrl: string;
   author: {
+    id: string;
     name: string;
     role: string;
     avatar: string;

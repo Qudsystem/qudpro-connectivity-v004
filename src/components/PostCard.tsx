@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
 import type { Post, Comment } from "@/types";
 
 interface PostCardProps {
@@ -18,13 +17,13 @@ interface PostCardProps {
   onShare: (postId: number) => void;
   onEdit?: (post: Post) => void;
   onDelete?: (postId: number) => void;
+  onProfileClick: (username: string) => void;
   isLiked: boolean;
 }
 
-const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, isLiked }: PostCardProps) => {
+const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfileClick, isLiked }: PostCardProps) => {
   const [showReactions, setShowReactions] = useState(false);
   const [currentReaction, setCurrentReaction] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const reactionSound = new Audio('/sounds/like-sound.mp3');
 
@@ -36,7 +35,7 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, isLiked 
   };
 
   const handleProfileClick = () => {
-    navigate(`/profile/${post.author.id}`);
+    onProfileClick(post.author.id);
   };
 
   const getSentimentIcon = (sentiment: string) => {
