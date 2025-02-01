@@ -1,6 +1,24 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import {
+  Bell,
+  Moon,
+  Sun,
+  Globe,
+  Lock,
+  Mail,
+  Shield,
+  Smartphone,
+  Volume2,
+  Languages,
+  LogOut,
+  ArrowLeft,
+} from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -8,77 +26,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Bell,
-  Moon,
-  Sun,
-  Volume2,
-  Languages,
-  LogOut,
-  ArrowLeft,
-  Lock,
-  Eye,
-  Shield,
-} from "lucide-react";
-import { useSettings } from "@/contexts/SettingsContext";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 
 const Settings = () => {
-  const { settings, updateSettings } = useSettings();
+  const {
+    darkMode,
+    setDarkMode,
+    language,
+    setLanguage,
+    emailNotifications,
+    setEmailNotifications,
+    pushNotifications,
+    setPushNotifications,
+    soundEnabled,
+    setSoundEnabled,
+    twoFactorEnabled,
+    setTwoFactorEnabled,
+    visibility,
+    setVisibility,
+  } = useSettings();
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleThemeChange = () => {
-    updateSettings({ ...settings, darkMode: !settings.darkMode });
-    toast({
-      title: !settings.darkMode ? "تم تفعيل الوضع الداكن" : "تم تفعيل الوضع الفاتح",
-      duration: 2000,
-    });
-  };
-
-  const handleLanguageChange = (value: string) => {
-    updateSettings({ ...settings, language: value });
-    toast({
-      title: "تم تغيير اللغة",
-      description: `تم تغيير اللغة إلى ${value === 'ar' ? 'العربية' : value === 'en' ? 'الإنجليزية' : 'الفرنسية'}`,
-      duration: 2000,
-    });
-  };
-
-  const handleNotificationChange = (type: 'email' | 'push' | 'sound', value: boolean) => {
-    updateSettings({
-      ...settings,
-      notifications: {
-        ...settings.notifications,
-        [type]: value
-      }
-    });
-    toast({
-      title: "تم تحديث إعدادات الإشعارات",
-      duration: 2000,
-    });
-  };
-
-  const handlePrivacyChange = (type: 'profileVisibility' | 'twoFactorAuth', value: boolean) => {
-    updateSettings({
-      ...settings,
-      privacy: {
-        ...settings.privacy,
-        [type]: value
-      }
-    });
-    toast({
-      title: "تم تحديث إعدادات الخصوصية",
-      duration: 2000,
-    });
-  };
-
   const handleLogout = () => {
-    // Add logout logic here
+    localStorage.clear();
     toast({
-      title: "تم تسجيل الخروج بنجاح",
-      duration: 2000,
+      title: "تم تسجيل الخروج",
+      description: "تم تسجيل خروجك بنجاح",
     });
     navigate('/login');
   };
@@ -104,24 +78,27 @@ const Settings = () => {
 
         {/* المظهر والتخصيص */}
         <Card className="p-6 bg-card text-card-foreground">
-          <h2 className="text-xl font-semibold mb-4">المظهر والتخصيص</h2>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Sun className="h-5 w-5" />
+            المظهر والتخصيص
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {settings.darkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                <span>الوضع الداكن</span>
+                {darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                <span>الوضع الليلي</span>
               </div>
               <Switch
-                checked={settings.darkMode}
-                onCheckedChange={handleThemeChange}
+                checked={darkMode}
+                onCheckedChange={setDarkMode}
               />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Languages className="h-5 w-5" />
+                <Languages className="h-4 w-4" />
                 <span>اللغة</span>
               </div>
-              <Select value={settings.language} onValueChange={handleLanguageChange}>
+              <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="اختر اللغة" />
                 </SelectTrigger>
@@ -137,36 +114,39 @@ const Settings = () => {
 
         {/* الإشعارات */}
         <Card className="p-6 bg-card text-card-foreground">
-          <h2 className="text-xl font-semibold mb-4">الإشعارات</h2>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            الإشعارات
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
+                <Mail className="h-4 w-4" />
                 <span>إشعارات البريد الإلكتروني</span>
               </div>
               <Switch
-                checked={settings.notifications.email}
-                onCheckedChange={(checked) => handleNotificationChange('email', checked)}
+                checked={emailNotifications}
+                onCheckedChange={setEmailNotifications}
               />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                <span>الإشعارات المنبثقة</span>
+                <Smartphone className="h-4 w-4" />
+                <span>إشعارات الجوال</span>
               </div>
               <Switch
-                checked={settings.notifications.push}
-                onCheckedChange={(checked) => handleNotificationChange('push', checked)}
+                checked={pushNotifications}
+                onCheckedChange={setPushNotifications}
               />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Volume2 className="h-5 w-5" />
-                <span>صوت الإشعارات</span>
+                <Volume2 className="h-4 w-4" />
+                <span>الأصوات</span>
               </div>
               <Switch
-                checked={settings.notifications.sound}
-                onCheckedChange={(checked) => handleNotificationChange('sound', checked)}
+                checked={soundEnabled}
+                onCheckedChange={setSoundEnabled}
               />
             </div>
           </div>
@@ -174,47 +154,51 @@ const Settings = () => {
 
         {/* الخصوصية والأمان */}
         <Card className="p-6 bg-card text-card-foreground">
-          <h2 className="text-xl font-semibold mb-4">الخصوصية والأمان</h2>
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            الخصوصية والأمان
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                <span>إخفاء الملف الشخصي</span>
+                <Lock className="h-4 w-4" />
+                <span>المصادقة الثنائية</span>
               </div>
               <Switch
-                checked={settings.privacy.profileVisibility}
-                onCheckedChange={(checked) => handlePrivacyChange('profileVisibility', checked)}
+                checked={twoFactorEnabled}
+                onCheckedChange={setTwoFactorEnabled}
               />
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                <span>المصادقة الثنائية</span>
+                <Globe className="h-4 w-4" />
+                <span>من يمكنه رؤية نشاطي</span>
               </div>
-              <Switch
-                checked={settings.privacy.twoFactorAuth}
-                onCheckedChange={(checked) => handlePrivacyChange('twoFactorAuth', checked)}
-              />
+              <Select value={visibility} onValueChange={setVisibility}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="اختر الخصوصية" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="everyone">الجميع</SelectItem>
+                  <SelectItem value="connections">جهات الاتصال فقط</SelectItem>
+                  <SelectItem value="none">لا أحد</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </Card>
 
-        {/* تسجيل الخروج */}
-        <Card className="p-6 bg-card text-card-foreground">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-destructive">
-              <LogOut className="h-5 w-5" />
-              <span>تسجيل الخروج</span>
-            </div>
-            <Button
-              variant="destructive"
-              onClick={handleLogout}
-              className="hover:bg-destructive/90"
-            >
-              تسجيل الخروج
-            </Button>
-          </div>
-        </Card>
+        {/* أزرار الإجراءات */}
+        <div className="flex justify-between items-center">
+          <Button
+            variant="destructive"
+            onClick={handleLogout}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            تسجيل الخروج
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,71 +1,99 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface NotificationSettings {
-  email: boolean;
-  push: boolean;
-  sound: boolean;
-}
-
-interface PrivacySettings {
-  profileVisibility: boolean;
-  twoFactorAuth: boolean;
-}
-
-interface Settings {
-  darkMode: boolean;
-  language: string;
-  notifications: NotificationSettings;
-  privacy: PrivacySettings;
-}
+import { useToast } from "@/components/ui/use-toast";
 
 interface SettingsContextType {
-  settings: Settings;
-  updateSettings: (newSettings: Settings) => void;
+  darkMode: boolean;
+  setDarkMode: (value: boolean) => void;
+  language: string;
+  setLanguage: (value: string) => void;
+  emailNotifications: boolean;
+  setEmailNotifications: (value: boolean) => void;
+  pushNotifications: boolean;
+  setPushNotifications: (value: boolean) => void;
+  soundEnabled: boolean;
+  setSoundEnabled: (value: boolean) => void;
+  twoFactorEnabled: boolean;
+  setTwoFactorEnabled: (value: boolean) => void;
+  visibility: string;
+  setVisibility: (value: string) => void;
 }
-
-const defaultSettings: Settings = {
-  darkMode: false,
-  language: 'ar',
-  notifications: {
-    email: true,
-    push: true,
-    sound: true,
-  },
-  privacy: {
-    profileVisibility: false,
-    twoFactorAuth: false,
-  },
-};
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<Settings>(() => {
-    const savedSettings = localStorage.getItem('settings');
-    return savedSettings ? JSON.parse(savedSettings) : defaultSettings;
+export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
+  const { toast } = useToast();
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem('language');
+    return saved || 'ar';
+  });
+  const [emailNotifications, setEmailNotifications] = useState(() => {
+    const saved = localStorage.getItem('emailNotifications');
+    return saved ? JSON.parse(saved) : true;
+  });
+  const [pushNotifications, setPushNotifications] = useState(() => {
+    const saved = localStorage.getItem('pushNotifications');
+    return saved ? JSON.parse(saved) : true;
+  });
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem('soundEnabled');
+    return saved ? JSON.parse(saved) : true;
+  });
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(() => {
+    const saved = localStorage.getItem('twoFactorEnabled');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [visibility, setVisibility] = useState(() => {
+    const saved = localStorage.getItem('visibility');
+    return saved || 'everyone';
   });
 
+  // Apply dark mode
   useEffect(() => {
-    localStorage.setItem('settings', JSON.stringify(settings));
-    
-    // Apply dark mode
-    if (settings.darkMode) {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    
-    // Apply language
-    document.documentElement.lang = settings.language;
-    document.documentElement.dir = settings.language === 'ar' ? 'rtl' : 'ltr';
-  }, [settings]);
+  }, [darkMode]);
 
-  const updateSettings = (newSettings: Settings) => {
-    setSettings(newSettings);
-  };
+  // Persist other settings
+  useEffect(() => {
+    localStorage.setItem('language', language);
+    localStorage.setItem('emailNotifications', JSON.stringify(emailNotifications));
+    localStorage.setItem('pushNotifications', JSON.stringify(pushNotifications));
+    localStorage.setItem('soundEnabled', JSON.stringify(soundEnabled));
+    localStorage.setItem('twoFactorEnabled', JSON.stringify(twoFactorEnabled));
+    localStorage.setItem('visibility', visibility);
+
+    // Show toast when settings are saved
+    toast({
+      title: "تم حفظ الإعدادات",
+      description: "تم تحديث إعداداتك بنجاح",
+    });
+  }, [language, emailNotifications, pushNotifications, soundEnabled, twoFactorEnabled, visibility, toast]);
 
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings }}>
+    <SettingsContext.Provider value={{
+      darkMode,
+      setDarkMode,
+      language,
+      setLanguage,
+      emailNotifications,
+      setEmailNotifications,
+      pushNotifications,
+      setPushNotifications,
+      soundEnabled,
+      setSoundEnabled,
+      twoFactorEnabled,
+      setTwoFactorEnabled,
+      visibility,
+      setVisibility,
+    }}>
       {children}
     </SettingsContext.Provider>
   );
