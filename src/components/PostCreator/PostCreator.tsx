@@ -75,6 +75,7 @@ export const PostCreator = () => {
         description: content,
         imageUrl: imagePreview || 'https://source.unsplash.com/random/800x600/?egypt,business',
         author: {
+          id: 'user-' + Date.now(), // Added the required id property
           name: 'John Doe',
           role: 'Software Engineer at QudSystem',
           avatar: 'https://github.com/shadcn.png'
