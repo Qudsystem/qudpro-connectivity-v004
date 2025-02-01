@@ -82,14 +82,27 @@ const PhotoGrid = () => {
     }
   };
 
-  const handleComment = (postId: number, comment: Comment) => {
+  const handleComment = (postId: number, commentText: string) => {
+    const newComment: Comment = {
+      id: Date.now(),
+      content: commentText,
+      author: {
+        id: 'current-user-id',
+        name: 'Current User',
+        avatar: 'https://github.com/shadcn.png',
+        role: 'Member'
+      },
+      timeAgo: 'just now'
+    };
+    
     setPosts(prevPosts => 
       prevPosts.map(post => 
         post.id === postId 
-          ? { ...post, comments: [comment, ...post.comments] }
+          ? { ...post, comments: [newComment, ...post.comments] }
           : post
       )
     );
+    
     toast({
       description: "تم إضافة تعليق بنجاح!",
       duration: 2000,

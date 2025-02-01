@@ -46,6 +46,7 @@ export interface Comment {
   id: number;
   content: string;
   author: {
+    id: string;  // Added id field
     name: string;
     avatar: string;
     role: string;

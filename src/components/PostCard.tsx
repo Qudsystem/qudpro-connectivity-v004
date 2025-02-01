@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from "./ui/card";
 import { ThumbsUp, Heart, Angry, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain } from "lucide-react";
 import {
@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import type { Post } from "@/types";
+import type { Post, Comment } from "@/types";
 
 interface PostCardProps {
   post: Post;
   onLike: (postId: number, reactionType: string) => void;
-  onComment: (postId: number, comment: string) => void;
+  onComment: (postId: number, comment: Comment) => void;
   onShare: (postId: number) => void;
   onEdit?: (post: Post) => void;
   onDelete?: (postId: number) => void;
