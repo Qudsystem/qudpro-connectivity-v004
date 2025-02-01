@@ -13,19 +13,7 @@ interface PostListProps {
 const PostList = ({ posts, onLike, onDelete, likedPosts }: PostListProps) => {
   const navigate = useNavigate();
 
-  const handleComment = (postId: number, commentText: string) => {
-    const newComment: Comment = {
-      id: Date.now(),
-      content: commentText,
-      author: {
-        id: 'current-user-id',
-        name: 'Current User',
-        avatar: 'https://github.com/shadcn.png',
-        role: 'Member'
-      },
-      timeAgo: 'just now'
-    };
-    
+  const handleComment = (postId: number, comment: Comment) => {
     toast({
       description: "تم إضافة التعليق بنجاح",
       duration: 2000,

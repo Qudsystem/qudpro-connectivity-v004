@@ -36,6 +36,7 @@ const generateRandomComment = (id: number): Comment => ({
   id,
   content: `This is a great insight about ${topics[Math.floor(Math.random() * topics.length)]}!`,
   author: {
+    id: `user-${Math.random().toString(36).substr(2, 9)}`,
     name: egyptianNames[Math.floor(Math.random() * egyptianNames.length)],
     avatar: profileImages[Math.floor(Math.random() * profileImages.length)],
     role: `Professional at ${egyptianCompanies[Math.floor(Math.random() * egyptianCompanies.length)]}`
@@ -62,6 +63,7 @@ export const generateRandomPost = (id: number): Post => {
     description: `Exploring the latest developments in ${randomTopics.join(', ')} and their impact on Egyptian businesses. #EgyptTech #Innovation`,
     imageUrl: placeholderImages[Math.floor(Math.random() * placeholderImages.length)],
     author: {
+      id: `user-${Math.random().toString(36).substr(2, 9)}`,
       name: egyptianNames[Math.floor(Math.random() * egyptianNames.length)],
       role: `Professional at ${egyptianCompanies[Math.floor(Math.random() * egyptianCompanies.length)]}`,
       avatar: profileImages[Math.floor(Math.random() * profileImages.length)]
