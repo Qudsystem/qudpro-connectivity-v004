@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { useEffect } from "react";
+import { useTheme } from "next-themes";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -14,12 +16,29 @@ import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Work from "./pages/Work";
 import Settings from "./pages/Settings";
-import React from 'react';
+import { ScrollToTop } from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <React.StrictMode>
+const App = () => {
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    // Check system theme preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [setTheme]);
+
+  return (
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
         <TooltipProvider delayDuration={0}>
@@ -31,6 +50,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:userId" element={<Profile />} />
               <Route path="/network" element={<Network />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/messages" element={<Messages />} />
@@ -38,11 +58,12 @@ const App = () => (
               <Route path="/work" element={<Work />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
+            <ScrollToTop />
           </BrowserRouter>
         </TooltipProvider>
       </SettingsProvider>
     </QueryClientProvider>
-  </React.StrictMode>
-);
+  );
+};
 
 export default App;
