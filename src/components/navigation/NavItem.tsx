@@ -1,26 +1,36 @@
 import { Link } from "react-router-dom";
-import React from "react";
+import { cn } from "@/lib/utils";
 
 interface NavItemProps {
+  to: string;
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   count?: number;
-  to: string;
 }
 
-export const NavItem = ({ icon, label, active = false, count, to }: NavItemProps) => {
+export const NavItem = ({ to, icon, label, active, count }: NavItemProps) => {
   return (
-    <Link to={to} className="flex flex-col items-center text-gray-500 dark:text-gray-400 hover:text-qudpro-primary dark:hover:text-white relative">
-      <div className={`p-1 rounded-lg ${active ? 'text-qudpro-primary dark:text-white' : ''}`}>
+    <Link
+      to={to}
+      className={cn(
+        "relative flex flex-col items-center justify-center px-3 py-2 text-sm font-medium transition-colors",
+        "hover:text-primary",
+        active
+          ? "text-primary"
+          : "text-gray-600 dark:text-gray-300",
+        "group"
+      )}
+    >
+      <div className="relative">
         {icon}
-        {count && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+        {count !== undefined && count > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
             {count}
           </span>
         )}
       </div>
-      <span className="text-xs mt-0.5">{label}</span>
+      <span className="mt-1 text-xs hidden sm:block">{label}</span>
     </Link>
   );
 };

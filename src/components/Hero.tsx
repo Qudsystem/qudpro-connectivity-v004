@@ -3,6 +3,12 @@ import { Input } from "./ui/input";
 import { Link, useLocation } from "react-router-dom";
 import { NavItem } from "./navigation/NavItem";
 import { ProfileDropdown } from "./navigation/ProfileDropdown";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Hero = () => {
   const location = useLocation();
@@ -41,9 +47,33 @@ const Hero = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-4">
-            <button className="text-gray-600 dark:text-gray-300">
-              <Bell className="h-6 w-6" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="relative text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                  <Bell className="h-6 w-6" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    3
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuItem asChild>
+                  <Link to="/notifications" className="w-full">
+                    View all notifications
+                  </Link>
+                </DropdownMenuItem>
+                {/* Recent notifications preview */}
+                <DropdownMenuItem className="cursor-pointer">
+                  New message from Ahmed
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Mohamed liked your post
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  New job matching your profile
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <ProfileDropdown />
           </div>
         </div>

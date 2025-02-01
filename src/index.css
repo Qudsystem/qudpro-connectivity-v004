@@ -101,3 +101,30 @@
 .support-button {
   @apply flex items-center justify-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300;
 }
+
+/* Notification styles */
+.notification-badge {
+  @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Ensure dropdown menus are always on top */
+.dropdown-content {
+  @apply z-50 bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .notification-dropdown {
+    @apply fixed top-16 right-4 left-4 bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700;
+  }
+}
