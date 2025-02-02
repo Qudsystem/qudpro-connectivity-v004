@@ -3,13 +3,14 @@ export interface ProfileType {
   name: string;
   role: string;
   avatar?: string;
+  coverImage?: string;
   company: string;
   location: string;
   website: string;
   email: string;
   connections: number;
   views: number;
-  impressions: number;  // Added this field
+  impressions: number;
   about: string;
   experience?: {
     title: string;
