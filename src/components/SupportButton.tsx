@@ -1,19 +1,16 @@
-import { Heart } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 
 export const SupportButton = () => {
-  const handleSupport = () => {
-    window.open('https://www.patreon.com/qudpro', '_blank');
-  };
-
   return (
-    <Button
-      onClick={handleSupport}
+    <a 
+      href="https://www.patreon.com/qudpro" 
+      target="_blank" 
+      rel="noopener noreferrer"
       className="support-button"
-      variant="default"
     >
       <Heart className="w-4 h-4" />
-      <span>دعم المنصة</span>
-    </Button>
+      <span>ادعم المنصة</span>
+    </a>
   );
 };

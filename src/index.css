@@ -128,3 +128,23 @@
     @apply fixed top-16 right-4 left-4 bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700;
   }
 }
+
+/* QudPro logo styles */
+.qudpro-logo {
+  @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 dark:from-blue-400 dark:to-primary;
+}
+
+/* Profile card improvements */
+.profile-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300;
+}
+
+/* Platform stats counter animation */
+.stat-number {
+  @apply transition-all duration-500;
+}
+
+/* Load more button */
+.load-more-button {
+  @apply w-full py-3 mt-6 text-center text-primary hover:text-primary/90 transition-colors duration-300;
+}
