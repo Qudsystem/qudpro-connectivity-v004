@@ -18,7 +18,10 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-qudpro-primary">
+            <Link 
+              to="/" 
+              className="text-2xl font-bold bg-gradient-to-r from-qudpro-primary to-qudpro-secondary bg-clip-text text-transparent dark:from-white dark:to-gray-300 transition-colors duration-300"
+            >
               QudPro
             </Link>
             <div className="hidden md:block ml-10">
@@ -27,7 +30,7 @@ const Hero = () => {
                 <Input
                   type="text"
                   placeholder="Search..."
-                  className="pl-10 pr-4 py-2 w-full"
+                  className="pl-10 pr-4 py-2 w-full dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
             </div>
