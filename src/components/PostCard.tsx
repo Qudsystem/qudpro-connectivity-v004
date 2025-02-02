@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from "./ui/card";
-import { ThumbsUp, Heart, Angry, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain } from "lucide-react";
+import { ThumbsUp, Heart, Angry, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, ChevronUp, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +27,7 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
   const [showReactions, setShowReactions] = useState(false);
   const [currentReaction, setCurrentReaction] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [showComments, setShowComments] = useState(false);
 
   const reactionSound = new Audio('/sounds/like-sound.mp3');
 
@@ -61,6 +62,16 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
     setCommentText('');
   };
 
+  const toggleComments = () => {
+    setShowComments(!showComments);
+    if (!showComments) {
+      toast({
+        description: "تم فتح التعليقات",
+        duration: 1500,
+      });
+    }
+  };
+
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
@@ -75,6 +86,7 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
   return (
     <Card className="overflow-hidden animate-fade-in">
       <div className="p-4">
+        {/* Author Info */}
         <div className="flex items-center justify-between mb-4">
           <div 
             className="flex items-center space-x-3 cursor-pointer"
@@ -165,9 +177,17 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
               )}
             </div>
             
-            <button className="reaction-button">
+            <button 
+              className={`reaction-button ${showComments ? 'text-primary' : ''}`}
+              onClick={toggleComments}
+            >
               <MessageCircle className="w-5 h-5" />
               <span>{post.comments.length}</span>
+              {showComments ? (
+                <ChevronUp className="w-4 h-4 ml-1" />
+              ) : (
+                <ChevronDown className="w-4 h-4 ml-1" />
+              )}
             </button>
           </div>
           
@@ -179,37 +199,53 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
           </button>
         </div>
 
-        {/* Comment Form */}
-        <form onSubmit={handleCommentSubmit} className="mt-4 flex gap-2">
-          <Input
-            type="text"
-            placeholder="Write a comment..."
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            className="flex-grow"
-          />
-          <Button type="submit" size="sm">
-            Comment
-          </Button>
-        </form>
-
-        {/* Comments List */}
-        <div className="mt-4 space-y-4">
-          {post.comments.map((comment) => (
-            <div key={comment.id} className="flex space-x-3 text-sm">
-              <img
-                src={comment.author.avatar}
-                alt={comment.author.name}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              <div>
-                <div className="font-medium text-foreground">{comment.author.name}</div>
-                <p className="text-muted-foreground">{comment.content}</p>
-                <div className="text-xs text-muted-foreground">{comment.timeAgo}</div>
+        {/* Dynamic Comments Section */}
+        {showComments && (
+          <div className="mt-4 border-t pt-4 animate-fade-up">
+            {/* Comment Form */}
+            <form onSubmit={handleCommentSubmit} className="mb-4">
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="اكتب تعليقك..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="flex-grow rounded-full bg-muted/50"
+                />
+                <Button 
+                  type="submit" 
+                  size="sm"
+                  className="rounded-full bg-primary hover:bg-primary/90"
+                >
+                  تعليق
+                </Button>
               </div>
+            </form>
+
+            {/* Comments List */}
+            <div className="space-y-4 max-h-[300px] overflow-y-auto">
+              {post.comments.map((comment) => (
+                <div 
+                  key={comment.id} 
+                  className="flex space-x-3 p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                >
+                  <img
+                    src={comment.author.avatar}
+                    alt={comment.author.name}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium text-foreground">{comment.author.name}</div>
+                      <div className="text-xs text-muted-foreground">{comment.timeAgo}</div>
+                    </div>
+                    <p className="text-sm text-foreground mt-1">{comment.content}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
         {post.analysis && (
           <div className="mt-4 p-3 bg-muted rounded-lg">
