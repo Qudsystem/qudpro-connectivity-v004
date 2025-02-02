@@ -14,10 +14,15 @@ const PostList = ({ posts, onLike, onDelete, likedPosts }: PostListProps) => {
   const navigate = useNavigate();
 
   const handleComment = (postId: number, comment: Comment) => {
-    toast({
-      description: "تم إضافة التعليق بنجاح",
-      duration: 2000,
-    });
+    // Find the post and add the comment
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      post.comments = [comment, ...post.comments];
+      toast({
+        description: "تم إضافة التعليق بنجاح",
+        duration: 2000,
+      });
+    }
   };
 
   const handleShare = (postId: number) => {

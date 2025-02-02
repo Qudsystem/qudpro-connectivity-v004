@@ -21,7 +21,7 @@ const PhotoGrid = () => {
         const newPosts = generateRandomPosts(5).map((post, index) => ({
           ...post,
           id: Date.now() + index,
-          comments: [] // Initialize empty comments array
+          comments: []
         }));
         setPosts(newPosts);
       } catch (error) {
@@ -40,7 +40,8 @@ const PhotoGrid = () => {
     const interval = setInterval(() => {
       const newPost = {
         ...generateRandomPosts(1)[0],
-        id: Date.now()
+        id: Date.now(),
+        comments: []
       };
       setPosts(prevPosts => [newPost, ...prevPosts.slice(0, 9)]);
       toast({

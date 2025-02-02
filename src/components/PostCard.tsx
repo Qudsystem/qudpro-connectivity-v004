@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import type { Post, Comment } from "@/types";
 
 interface PostCardProps {
@@ -24,6 +26,7 @@ interface PostCardProps {
 const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfileClick, isLiked }: PostCardProps) => {
   const [showReactions, setShowReactions] = useState(false);
   const [currentReaction, setCurrentReaction] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState('');
 
   const reactionSound = new Audio('/sounds/like-sound.mp3');
 
@@ -36,6 +39,26 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
 
   const handleProfileClick = () => {
     onProfileClick(post.author.id);
+  };
+
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    const newComment: Comment = {
+      id: Date.now(),
+      content: commentText,
+      author: {
+        id: 'user-' + Date.now(),
+        name: 'Current User',
+        avatar: 'https://github.com/shadcn.png',
+        role: 'Member'
+      },
+      timeAgo: 'Just now'
+    };
+
+    onComment(post.id, newComment);
+    setCommentText('');
   };
 
   const getSentimentIcon = (sentiment: string) => {
@@ -154,6 +177,38 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
           >
             <Share2 className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Comment Form */}
+        <form onSubmit={handleCommentSubmit} className="mt-4 flex gap-2">
+          <Input
+            type="text"
+            placeholder="Write a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="flex-grow"
+          />
+          <Button type="submit" size="sm">
+            Comment
+          </Button>
+        </form>
+
+        {/* Comments List */}
+        <div className="mt-4 space-y-4">
+          {post.comments.map((comment) => (
+            <div key={comment.id} className="flex space-x-3 text-sm">
+              <img
+                src={comment.author.avatar}
+                alt={comment.author.name}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <div>
+                <div className="font-medium text-foreground">{comment.author.name}</div>
+                <p className="text-muted-foreground">{comment.content}</p>
+                <div className="text-xs text-muted-foreground">{comment.timeAgo}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {post.analysis && (
