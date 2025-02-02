@@ -24,21 +24,15 @@ const App = () => {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    // Check system theme preference and time-based theme
     const checkTheme = () => {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      
-      // Get user's location time
       const hour = new Date().getHours();
       const isNightTime = hour < 6 || hour >= 18;
-      
-      // Set theme based on system preference or time
       setTheme(prefersDark || isNightTime ? 'dark' : 'light');
     };
 
     checkTheme();
 
-    // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => checkTheme();
     
@@ -48,8 +42,8 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SettingsProvider>
-        <TooltipProvider delayDuration={0}>
+      <TooltipProvider delayDuration={0}>
+        <SettingsProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -68,8 +62,8 @@ const App = () => {
             </Routes>
             <ScrollToTop />
           </BrowserRouter>
-        </TooltipProvider>
-      </SettingsProvider>
+        </SettingsProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };

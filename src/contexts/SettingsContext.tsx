@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface SettingsContextType {
   darkMode: boolean;
@@ -22,30 +22,37 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { toast } = useToast();
+  
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved ? JSON.parse(saved) : false;
   });
+  
   const [language, setLanguage] = useState(() => {
     const saved = localStorage.getItem('language');
     return saved || 'ar';
   });
+  
   const [emailNotifications, setEmailNotifications] = useState(() => {
     const saved = localStorage.getItem('emailNotifications');
     return saved ? JSON.parse(saved) : true;
   });
+  
   const [pushNotifications, setPushNotifications] = useState(() => {
     const saved = localStorage.getItem('pushNotifications');
     return saved ? JSON.parse(saved) : true;
   });
+  
   const [soundEnabled, setSoundEnabled] = useState(() => {
     const saved = localStorage.getItem('soundEnabled');
     return saved ? JSON.parse(saved) : true;
   });
+  
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(() => {
     const saved = localStorage.getItem('twoFactorEnabled');
     return saved ? JSON.parse(saved) : false;
   });
+  
   const [visibility, setVisibility] = useState(() => {
     const saved = localStorage.getItem('visibility');
     return saved || 'everyone';
