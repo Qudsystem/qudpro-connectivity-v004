@@ -20,7 +20,7 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
+export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { toast } = useToast();
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
@@ -51,7 +51,6 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     return saved || 'everyone';
   });
 
-  // Apply dark mode
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
     if (darkMode) {
@@ -61,7 +60,6 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     }
   }, [darkMode]);
 
-  // Persist other settings
   useEffect(() => {
     localStorage.setItem('language', language);
     localStorage.setItem('emailNotifications', JSON.stringify(emailNotifications));
@@ -70,7 +68,6 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     localStorage.setItem('twoFactorEnabled', JSON.stringify(twoFactorEnabled));
     localStorage.setItem('visibility', visibility);
 
-    // Show toast when settings are saved
     toast({
       title: "تم حفظ الإعدادات",
       description: "تم تحديث إعداداتك بنجاح",
