@@ -1,94 +1,40 @@
-export interface ProfileType {
+export interface User {
   id: string;
   name: string;
-  role: string;
-  avatar?: string;
-  coverImage?: string;
-  company: string;
-  location: string;
-  website: string;
   email: string;
-  connections: number;
-  views: number;
-  impressions: number;
-  about: string;
-  experience?: {
-    title: string;
-    company: string;
-    period: string;
-    description: string;
-  }[];
-  education?: {
-    school: string;
-    degree: string;
-    period: string;
-  }[];
-}
-
-export interface Skill {
-  name: string;
-  endorsements: number;
-  isEndorsed?: boolean;
-}
-
-export interface ProfileAnalytics {
-  views: number;
-  connections: number;
-  impressions: number;
-  viewsData: Array<{ date: string; views: number }>;
-}
-
-export interface ProfileStrengthData {
-  strength: number;
-  recommendations: string[];
-}
-
-export interface Comment {
-  id: number;
-  content: string;
-  author: {
-    id: string;
-    name: string;
-    avatar: string;
-    role: string;
-  };
-  timeAgo: string;
-}
-
-export interface PostAnalysis {
-  engagement: number;
-  reach: number;
-  sentiment: 'positive' | 'neutral' | 'negative';
-  topics: string[];
-  timestamp: string;
+  avatar?: string;
+  role?: string;
+  company?: string;
+  location?: string;
+  website?: string;
+  bio?: string;
 }
 
 export interface Post {
   id: number;
-  title: string;
-  category: string;
-  description: string;
-  imageUrl: string;
   author: {
     id: string;
     name: string;
-    role: string;
     avatar: string;
+    role?: string;
   };
+  content: string;
+  image?: string;
   likes: number;
   comments: Comment[];
-  timeAgo: string;
-  isUserPost?: boolean;
-  analysis?: PostAnalysis;
+  createdAt: string;
+  sentiment?: 'positive' | 'negative' | 'neutral';
 }
 
-export interface WorkItem {
+export interface Comment {
   id: number;
-  title: string;
-  icon: React.ReactNode;
-  description: string;
-  count: number;
-  type: 'project' | 'content' | 'event' | 'group';
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  content: string;
+  createdAt: string;
 }
 
 export interface PlatformStats {
@@ -96,4 +42,29 @@ export interface PlatformStats {
   jobsPosted: number;
   articles: number;
   upcomingEvents: number;
+}
+
+export interface Settings {
+  darkMode: boolean;
+  language: string;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  soundEnabled: boolean;
+  twoFactorEnabled: boolean;
+  visibility: 'everyone' | 'connections' | 'none';
+}
+
+export interface Profile {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  location: string;
+  website?: string;
+  bio: string;
+  avatar: string;
+  coverImage?: string;
+  connections: number;
+  posts: number;
+  views: number;
 }
