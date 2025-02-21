@@ -49,6 +49,33 @@
   }
 }
 
+@keyframes textShimmer {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+
+@keyframes textShimmerReverse {
+  0% {
+    background-position: -200% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@layer utilities {
+  .animate-text-shimmer {
+    animation: textShimmer 8s linear infinite;
+  }
+  .animate-text-shimmer-reverse {
+    animation: textShimmerReverse 8s linear infinite;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -1,3 +1,4 @@
+
 import Hero from "@/components/Hero";
 import PhotoGrid from "@/components/PhotoGrid";
 import { PostCreator } from "@/components/PostCreator/PostCreator";
@@ -7,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Users, Briefcase, BookOpen, Calendar } from "lucide-react";
 import { ErrorBoundary } from "react-error-boundary";
 import type { PlatformStats } from "@/types";
+import { AnimatedLogo } from "@/components/ui/animated-logo";
 
 const platformStats: PlatformStats = {
   professionals: 5234,
@@ -32,6 +34,12 @@ const Index = () => {
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Hero />
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow">
+          <div className="text-center mb-8">
+            <AnimatedLogo className="mb-4" />
+            <p className="text-lg text-muted-foreground">
+              Connect with professionals across Egypt
+            </p>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Left Sidebar */}
             <div className="lg:col-span-1">
