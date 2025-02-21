@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from "@/components/ui/use-toast";
@@ -46,10 +47,12 @@ export const usePosts = () => {
   const queryClient = useQueryClient();
   const [editingPost, setEditingPost] = useState<Post | null>(null);
 
-  // Query for fetching posts
+  // Query for fetching posts with automatic updates
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchOnWindowFocus: true,
   });
 
   // Mutation for creating posts
@@ -111,6 +114,17 @@ export const usePosts = () => {
     },
   });
 
+  // Optimistic updates for better UX
+  const optimisticLike = (postId: number) => {
+    queryClient.setQueryData(['posts'], (old: Post[] = []) =>
+      old.map(post =>
+        post.id === postId
+          ? { ...post, likes: post.likes + 1 }
+          : post
+      )
+    );
+  };
+
   return {
     posts,
     isLoading,
@@ -119,5 +133,6 @@ export const usePosts = () => {
     createPost: createMutation.mutate,
     updatePost: updateMutation.mutate,
     deletePost: deleteMutation.mutate,
+    optimisticLike,
   };
 };

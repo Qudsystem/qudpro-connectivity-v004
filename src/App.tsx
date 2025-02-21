@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,9 +17,19 @@ import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Work from "./pages/Work";
 import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 import { ScrollToTop } from "./components/ScrollToTop";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 const App = () => {
   const { setTheme } = useTheme();
@@ -59,6 +70,7 @@ const App = () => {
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/work" element={<Work />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/help" element={<Help />} />
             </Routes>
             <ScrollToTop />
           </BrowserRouter>
