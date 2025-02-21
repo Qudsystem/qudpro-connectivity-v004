@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from "./ui/card";
 import { ThumbsUp, Heart, Angry, MessageCircle, Share2, MoreHorizontal, TrendingUp, Users, Brain, ChevronUp, ChevronDown } from "lucide-react";
@@ -7,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Post, Comment } from "@/types";
@@ -28,6 +29,7 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
   const [currentReaction, setCurrentReaction] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
+  const { toast } = useToast();
 
   const reactionSound = new Audio('/sounds/like-sound.mp3');
 
@@ -55,7 +57,8 @@ const PostCard = ({ post, onLike, onComment, onShare, onEdit, onDelete, onProfil
         avatar: 'https://github.com/shadcn.png',
         role: 'Member'
       },
-      timeAgo: 'Just now'
+      timeAgo: 'Just now',
+      createdAt: new Date().toISOString()
     };
 
     onComment(post.id, newComment);
