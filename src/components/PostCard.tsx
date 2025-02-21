@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Post, Comment } from "@/types";

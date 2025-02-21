@@ -1,3 +1,4 @@
+
 import type { Post, Comment } from "@/types";
 
 const egyptianNames = [
@@ -15,7 +16,6 @@ const topics = [
   "Entrepreneurship", "Software Development", "AI & Machine Learning"
 ];
 
-// Reliable placeholder images from Unsplash
 const placeholderImages = [
   "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
   "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
@@ -32,17 +32,24 @@ const profileImages = [
   "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
 ];
 
-const generateRandomComment = (id: number): Comment => ({
-  id,
-  content: `This is a great insight about ${topics[Math.floor(Math.random() * topics.length)]}!`,
-  author: {
-    id: `user-${Math.random().toString(36).substr(2, 9)}`,
-    name: egyptianNames[Math.floor(Math.random() * egyptianNames.length)],
-    avatar: profileImages[Math.floor(Math.random() * profileImages.length)],
-    role: `Professional at ${egyptianCompanies[Math.floor(Math.random() * egyptianCompanies.length)]}`
-  },
-  timeAgo: `${Math.floor(Math.random() * 24)}h ago`
-});
+const generateRandomComment = (id: number): Comment => {
+  const now = new Date();
+  const createdAt = now.toISOString();
+  const timeAgo = `${Math.floor(Math.random() * 24)}h ago`;
+  
+  return {
+    id,
+    content: `This is a great insight about ${topics[Math.floor(Math.random() * topics.length)]}!`,
+    author: {
+      id: `user-${Math.random().toString(36).substr(2, 9)}`,
+      name: egyptianNames[Math.floor(Math.random() * egyptianNames.length)],
+      avatar: profileImages[Math.floor(Math.random() * profileImages.length)],
+      role: `Professional at ${egyptianCompanies[Math.floor(Math.random() * egyptianCompanies.length)]}`
+    },
+    createdAt,
+    timeAgo
+  };
+};
 
 const generateRandomComments = (count: number): Comment[] =>
   Array.from({ length: count }, (_, index) => generateRandomComment(index));
@@ -55,12 +62,14 @@ export const generateRandomPost = (id: number): Post => {
 
   const engagement = Math.floor(Math.random() * 1000);
   const sentiments = ['positive', 'neutral', 'negative'] as const;
-
+  const now = new Date();
+  
   return {
     id,
     title: `Insights on ${randomTopics[0]}`,
     category: randomTopics[0],
     description: `Exploring the latest developments in ${randomTopics.join(', ')} and their impact on Egyptian businesses. #EgyptTech #Innovation`,
+    content: `Detailed content about ${randomTopics.join(', ')} and their impact on Egyptian businesses...`,
     imageUrl: placeholderImages[Math.floor(Math.random() * placeholderImages.length)],
     author: {
       id: `user-${Math.random().toString(36).substr(2, 9)}`,
@@ -70,6 +79,7 @@ export const generateRandomPost = (id: number): Post => {
     },
     likes: Math.floor(Math.random() * 200),
     comments: generateRandomComments(Math.floor(Math.random() * 5) + 1),
+    createdAt: now.toISOString(),
     timeAgo: `${Math.floor(Math.random() * 24)}h ago`,
     analysis: {
       engagement,
