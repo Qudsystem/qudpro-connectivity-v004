@@ -13,22 +13,22 @@ const Logo = () => {
             <stop offset="0%" className="animate-gradient-flow">
               <animate
                 attributeName="stop-color"
-                values="#3B82F6;#10B981;#3B82F6"
-                dur="4s"
+                values="#9b87f5;#7E69AB;#D946EF;#F97316;#0EA5E9;#9b87f5"
+                dur="8s"
                 repeatCount="indefinite"
               />
             </stop>
             <stop offset="100%" className="animate-gradient-flow">
               <animate
                 attributeName="stop-color"
-                values="#10B981;#3B82F6;#10B981"
-                dur="4s"
+                values="#0EA5E9;#9b87f5;#7E69AB;#D946EF;#F97316;#0EA5E9"
+                dur="8s"
                 repeatCount="indefinite"
               />
             </stop>
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -64,7 +64,9 @@ const Logo = () => {
           />
         </path>
       </svg>
-      <div className="absolute inset-0 blur-[0.4px] [mask-image:radial-gradient(circle_at_center,rgba(255,255,255,1)_60%,rgba(255,255,255,0)_90%)]"></div>
+      <div className="absolute inset-0 blur-[0.4px] [mask-image:radial-gradient(circle_at_center,rgba(255,255,255,1)_60%,rgba(255,255,255,0)_90%)]">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-blue-500/30 animate-pulse"></div>
+      </div>
     </div>
   );
 };
