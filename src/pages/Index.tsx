@@ -2,7 +2,7 @@
 import React from "react";
 import Hero from "@/components/Hero";
 import PhotoGrid from "@/components/PhotoGrid";
-import PlatformStats from "@/components/PlatformStats";
+import { PlatformStats } from "@/components/PlatformStats";
 import Logo from "@/components/Logo";
 
 const Index = () => {
