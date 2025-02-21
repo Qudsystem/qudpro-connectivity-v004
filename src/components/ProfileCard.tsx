@@ -1,86 +1,93 @@
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { MapPin, Link as LinkIcon, TrendingUp, Users, Brain } from "lucide-react";
-import { Progress } from "./ui/progress";
+
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MapPin, Link as LinkIcon, Mail } from "lucide-react";
+import { generateRandomPost } from "./PhotoGrid/PostGenerator";
+import { useEffect, useState } from "react";
+
+const profileImages = [
+  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+  "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
+  "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+];
+
+const egyptianCompanies = [
+  "QudSystem", "Cairo Tech", "Alexandria Digital", "Delta Solutions",
+  "Nile Innovations", "Pyramid Software", "Sphinx Technologies"
+];
+
+const locations = [
+  "Cairo, Egypt", 
+  "Alexandria, Egypt", 
+  "Giza, Egypt", 
+  "Luxor, Egypt",
+  "Aswan, Egypt"
+];
 
 const ProfileCard = () => {
+  const [randomData, setRandomData] = useState({
+    name: "",
+    role: "",
+    avatar: "",
+    location: "",
+    company: ""
+  });
+
+  useEffect(() => {
+    const randomPost = generateRandomPost(Date.now());
+    const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+    const randomImage = profileImages[Math.floor(Math.random() * profileImages.length)];
+    const randomCompany = egyptianCompanies[Math.floor(Math.random() * egyptianCompanies.length)];
+
+    setRandomData({
+      name: randomPost.author.name,
+      role: randomPost.author.role,
+      avatar: randomImage,
+      location: randomLocation,
+      company: randomCompany
+    });
+  }, []);
+
   return (
     <Card className="p-6 bg-white dark:bg-gray-800 shadow-sm">
-      <div className="text-center mb-6">
-        <img
-          src="https://github.com/shadcn.png"
-          alt="Ahmed Hassan"
-          className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-white dark:border-gray-700 shadow-lg"
-        />
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Ahmed Hassan</h2>
-        <p className="text-gray-600 dark:text-gray-300">Senior Software Engineer</p>
-        <div className="flex items-center justify-center mt-2 text-sm text-gray-500 dark:text-gray-400">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span>Cairo, Egypt</span>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Profile Strength</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">75%</span>
-          </div>
-          <Progress value={75} className="h-2" />
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Skills & Endorsements</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-300">React</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">42 endorsements</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-300">TypeScript</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">38 endorsements</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Node.js</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">25 endorsements</span>
-            </div>
+      <div className="flex flex-col items-center text-center">
+        <div className="relative mb-4">
+          <img
+            src={randomData.avatar}
+            alt={randomData.name}
+            className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+          />
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+            Online
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Profile Analytics</h3>
-          <div className="space-y-2">
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              <span>1475 profile views</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-              <Users className="w-4 h-4 mr-2" />
-              <span>500+ connections</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-              <Brain className="w-4 h-4 mr-2" />
-              <span>2891 post impressions</span>
-            </div>
+        <h3 className="text-lg font-semibold text-foreground mb-1">
+          {randomData.name}
+        </h3>
+        <p className="text-sm text-muted-foreground mb-3">
+          {randomData.role}
+        </p>
+
+        <div className="w-full space-y-2 mb-4">
+          <div className="flex items-center justify-center text-sm text-muted-foreground">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span>{randomData.location}</span>
           </div>
-        </div>
-
-        <div className="flex space-x-2">
-          <Button className="flex-1">Connect</Button>
-          <Button variant="outline" className="flex-1">Message</Button>
-        </div>
-
-        <div className="text-sm text-center">
-          <a 
-            href="https://qudsystem.com" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-primary hover:text-primary/80 dark:text-blue-400 dark:hover:text-blue-300 flex items-center justify-center"
-          >
+          <div className="flex items-center justify-center text-sm text-muted-foreground">
             <LinkIcon className="w-4 h-4 mr-1" />
-            qudsystem.com
-          </a>
+            <span>{randomData.company}</span>
+          </div>
         </div>
+
+        <Button className="w-full mb-2">
+          Connect
+        </Button>
+        <Button variant="outline" className="w-full">
+          Message
+        </Button>
       </div>
     </Card>
   );
