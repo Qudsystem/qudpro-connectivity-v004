@@ -175,3 +175,9 @@
 .load-more-button {
   @apply w-full py-3 mt-6 text-center text-primary hover:text-primary/90 transition-colors duration-300;
 }
+
+@layer base {
+  html {
+    direction: rtl;
+  }
+}

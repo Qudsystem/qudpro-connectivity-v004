@@ -17,6 +17,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useAuth } from "@/hooks/useAuth";
+import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -48,13 +50,15 @@ const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح",
     });
-    navigate('/login');
+    navigate('/auth');
   };
 
   const handleBack = () => {
@@ -62,7 +66,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between mb-8">
           <Button
@@ -200,7 +204,7 @@ const Settings = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
