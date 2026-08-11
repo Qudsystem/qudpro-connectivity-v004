@@ -64,7 +64,15 @@ const Jobs = () => {
     mutationFn: async () => {
       const parsed = jobSchema.safeParse(form);
       if (!parsed.success) throw new Error(parsed.error.issues[0].message);
-      const { error } = await supabase.from("jobs").insert({ ...parsed.data, posted_by: user!.id });
+      const { error } = await supabase.from("jobs").insert({
+        title: parsed.data.title,
+        company: parsed.data.company,
+        location: parsed.data.location,
+        job_type: parsed.data.job_type,
+        salary_range: parsed.data.salary_range || null,
+        description: parsed.data.description,
+        posted_by: user!.id,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
