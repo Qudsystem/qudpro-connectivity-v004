@@ -1,116 +1,201 @@
-import Hero from "@/components/Hero";
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Briefcase, MapPin, Building2, Plus, Loader2, Search } from "lucide-react";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, Clock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+import { timeAgo } from "@/lib/format";
+
+const jobSchema = z.object({
+  title: z.string().trim().min(3, "العنوان قصير جدًا").max(120),
+  company: z.string().trim().min(2, "اسم الشركة مطلوب").max(120),
+  location: z.string().trim().min(2, "الموقع مطلوب").max(120),
+  job_type: z.string().trim().min(2).max(50),
+  salary_range: z.string().trim().max(80).optional(),
+  description: z.string().trim().min(10, "الوصف قصير جدًا").max(5000),
+});
+
+const emptyJob = {
+  title: "",
+  company: "",
+  location: "",
+  job_type: "دوام كامل",
+  salary_range: "",
+  description: "",
+};
 
 const Jobs = () => {
-  const jobs = [
-    {
-      id: 1,
-      title: "Senior Photographer",
-      company: "Cairo Creative Studio",
-      location: "Cairo, Egypt",
-      type: "Full-time",
-      posted: "2 days ago",
-      logo: "https://source.unsplash.com/random/40x40/?logo"
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(emptyJob);
+
+  const { data: jobs = [], isLoading } = useQuery({
+    queryKey: ["jobs", search],
+    queryFn: async () => {
+      let query = supabase.from("jobs").select("*").order("created_at", { ascending: false }).limit(50);
+      if (search.trim()) query = query.ilike("title", `%${search.trim()}%`);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data ?? [];
     },
-    {
-      id: 2,
-      title: "Commercial Photographer",
-      company: "Alexandria Media",
-      location: "Alexandria, Egypt",
-      type: "Contract",
-      posted: "1 day ago",
-      logo: "https://source.unsplash.com/random/40x40/?company"
+  });
+
+  const { data: myApplications = [] } = useQuery({
+    queryKey: ["my-applications", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase.from("job_applications").select("job_id").eq("applicant_id", user!.id);
+      return (data ?? []).map((a) => a.job_id);
     },
-    {
-      id: 3,
-      title: "Photography Director",
-      company: "Egyptian Arts",
-      location: "Giza, Egypt",
-      type: "Full-time",
-      posted: "3 days ago",
-      logo: "https://source.unsplash.com/random/40x40/?brand"
-    }
-  ];
+  });
+
+  const createJob = useMutation({
+    mutationFn: async () => {
+      const parsed = jobSchema.safeParse(form);
+      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      const { error } = await supabase.from("jobs").insert({ ...parsed.data, posted_by: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setOpen(false);
+      setForm(emptyJob);
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      toast({ description: "تم نشر الوظيفة بنجاح" });
+    },
+    onError: (e: Error) => toast({ variant: "destructive", description: e.message }),
+  });
+
+  const apply = useMutation({
+    mutationFn: async (jobId: string) => {
+      const { error } = await supabase
+        .from("job_applications")
+        .insert({ job_id: jobId, applicant_id: user!.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-applications"] });
+      toast({ description: "تم إرسال طلب التقديم" });
+    },
+    onError: () => toast({ variant: "destructive", description: "تعذّر التقديم على الوظيفة" }),
+  });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Hero />
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Job Search Filters */}
-          <Card className="p-6 h-fit">
-            <h3 className="text-xl font-semibold mb-4">Search Filters</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Location
-                </label>
-                <select className="w-full border-gray-300 rounded-md shadow-sm">
-                  <option>All Egypt</option>
-                  <option>Cairo</option>
-                  <option>Alexandria</option>
-                  <option>Giza</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Job Type
-                </label>
-                <select className="w-full border-gray-300 rounded-md shadow-sm">
-                  <option>All Types</option>
-                  <option>Full-time</option>
-                  <option>Part-time</option>
-                  <option>Contract</option>
-                </select>
-              </div>
-              <Button className="w-full">Apply Filters</Button>
-            </div>
-          </Card>
-
-          {/* Job Listings */}
-          <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold mb-6">Recent Job Postings</h2>
-            <div className="space-y-6">
-              {jobs.map((job) => (
-                <Card key={job.id} className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <img
-                      src={job.logo}
-                      alt={job.company}
-                      className="w-12 h-12 rounded object-cover"
-                    />
-                    <div className="flex-1">
-                      <h4 className="text-xl font-semibold">{job.title}</h4>
-                      <p className="text-gray-600">{job.company}</p>
-                      <div className="mt-2 space-y-2">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <MapPin className="w-4 h-4 mr-2" />
-                          {job.location}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Briefcase className="w-4 h-4 mr-2" />
-                          {job.type}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="w-4 h-4 mr-2" />
-                          Posted {job.posted}
-                        </div>
-                      </div>
-                      <div className="mt-4 flex space-x-3">
-                        <Button>Apply Now</Button>
-                        <Button variant="outline">Save Job</Button>
-                      </div>
+    <Layout>
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold">الوظائف</h1>
+          {user && (
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="ml-2 h-4 w-4" /> نشر وظيفة
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>نشر وظيفة جديدة</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  {[
+                    { key: "title", label: "المسمى الوظيفي" },
+                    { key: "company", label: "الشركة" },
+                    { key: "location", label: "الموقع (مثال: القاهرة)" },
+                    { key: "job_type", label: "نوع الدوام" },
+                    { key: "salary_range", label: "نطاق الراتب (اختياري)" },
+                  ].map(({ key, label }) => (
+                    <div key={key} className="space-y-2">
+                      <Label htmlFor={key}>{label}</Label>
+                      <Input
+                        id={key}
+                        value={(form as Record<string, string>)[key]}
+                        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                      />
                     </div>
+                  ))}
+                  <div className="space-y-2">
+                    <Label htmlFor="description">وصف الوظيفة</Label>
+                    <Textarea
+                      id="description"
+                      rows={5}
+                      value={form.description}
+                      onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    />
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+                  <Button className="w-full" onClick={() => createJob.mutate()} disabled={createJob.isPending}>
+                    {createJob.isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />} نشر
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+
+        <div className="relative mb-6">
+          <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ابحث عن وظيفة..."
+            className="pr-9"
+          />
+        </div>
+
+        {isLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
+        {!isLoading && jobs.length === 0 && (
+          <Card className="p-8 text-center text-muted-foreground">
+            <Briefcase className="mx-auto mb-3 h-6 w-6" />
+            لا توجد وظائف منشورة حاليًا
+          </Card>
+        )}
+
+        <div className="space-y-4">
+          {jobs.map((job) => (
+            <Card key={job.id} className="p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold">{job.title}</h2>
+                  <div className="mt-1 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Building2 className="h-4 w-4" /> {job.company}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" /> {job.location}
+                    </span>
+                    <span>{timeAgo(job.created_at)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">{job.job_type}</Badge>
+                  {job.salary_range && <Badge variant="outline">{job.salary_range}</Badge>}
+                </div>
+              </div>
+              <p className="mt-3 whitespace-pre-wrap text-sm">{job.description}</p>
+              {user && job.posted_by !== user.id && (
+                <Button
+                  className="mt-4"
+                  size="sm"
+                  disabled={myApplications.includes(job.id) || apply.isPending}
+                  onClick={() => apply.mutate(job.id)}
+                >
+                  {myApplications.includes(job.id) ? "تم التقديم" : "تقديم الآن"}
+                </Button>
+              )}
+            </Card>
+          ))}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
