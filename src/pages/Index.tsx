@@ -1,128 +1,153 @@
-
-import Hero from "@/components/Hero";
-import PhotoGrid from "@/components/PhotoGrid";
-import { PostCreator } from "@/components/PostCreator/PostCreator";
-import ProfileCard from "@/components/ProfileCard";
-import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Users, Briefcase, FileText, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import Layout from "@/components/Layout";
+import PostComposer from "@/components/feed/PostComposer";
+import PostCard from "@/components/feed/PostCard";
+import { usePosts } from "@/hooks/usePosts";
+import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
-import { Users, Briefcase, BookOpen, Calendar } from "lucide-react";
-import { ErrorBoundary } from "react-error-boundary";
-import type { PlatformStats } from "@/types";
-import { AnimatedLogo } from "@/components/ui/animated-logo";
-
-const platformStats: PlatformStats = {
-  professionals: 5234,
-  jobsPosted: 1890,
-  articles: 342,
-  upcomingEvents: 56
-};
-
-const ErrorFallback = ({ error }: { error: Error }) => {
-  return (
-    <div className="text-center p-4">
-      <h2 className="text-lg font-semibold text-red-600">Something went wrong:</h2>
-      <pre className="text-sm text-gray-500">{error.message}</pre>
-    </div>
-  );
-};
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { initials } from "@/lib/format";
 
 const Index = () => {
-  const isAuthenticated = false;
+  const { user, profile } = useAuth();
+  const { data: posts = [], isLoading } = usePosts();
+
+  const { data: stats } = useQuery({
+    queryKey: ["platform-stats"],
+    queryFn: async () => {
+      const [members, jobs, articles] = await Promise.all([
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("jobs").select("id", { count: "exact", head: true }),
+        supabase.from("posts").select("id", { count: "exact", head: true }),
+      ]);
+      return {
+        members: members.count ?? 0,
+        jobs: jobs.count ?? 0,
+        articles: articles.count ?? 0,
+      };
+    },
+  });
+
+  const { data: suggestions = [] } = useQuery({
+    queryKey: ["suggested-people", user?.id],
+    queryFn: async () => {
+      const query = supabase.from("profiles").select("id, full_name, headline, avatar_url").limit(5);
+      const { data } = user ? await query.neq("id", user.id) : await query;
+      return data ?? [];
+    },
+  });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Hero />
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow">
-          <div className="text-center mb-8">
-            <AnimatedLogo className="mb-4" />
-            <p className="text-lg text-muted-foreground">
-              Connect with professionals across Egypt
-            </p>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Left Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="space-y-6">
-                <ErrorBoundary FallbackComponent={ErrorFallback}>
-                  <ProfileCard />
-                </ErrorBoundary>
-                <Card className="p-4 bg-white dark:bg-gray-800 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Platform Stats</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                      <Users className="w-4 h-4 mr-2" />
-                      <span>{platformStats.professionals.toLocaleString()} Professionals</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                      <Briefcase className="w-4 h-4 mr-2" />
-                      <span>{platformStats.jobsPosted.toLocaleString()} Jobs Posted</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      <span>{platformStats.articles.toLocaleString()} Articles</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      <span>{platformStats.upcomingEvents.toLocaleString()} Upcoming Events</span>
-                    </div>
+    <Layout>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <aside className="space-y-6 lg:col-span-1">
+          <Card className="overflow-hidden">
+            <div className="h-16 bg-primary/10" />
+            <div className="-mt-8 flex flex-col items-center p-4 text-center">
+              <Avatar className="h-16 w-16 border-4 border-card">
+                <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.full_name ?? "زائر"} />
+                <AvatarFallback>{initials(profile?.full_name)}</AvatarFallback>
+              </Avatar>
+              <h2 className="mt-2 font-semibold">{profile?.full_name || "مرحبًا بك في QudPro"}</h2>
+              <p className="text-xs text-muted-foreground">
+                {profile?.headline || "انضم إلى شبكة المحترفين في مصر"}
+              </p>
+              {user ? (
+                <Button asChild variant="outline" size="sm" className="mt-3 w-full">
+                  <Link to="/profile">عرض ملفي الشخصي</Link>
+                </Button>
+              ) : (
+                <Button asChild size="sm" className="mt-3 w-full">
+                  <Link to="/auth">إنشاء حساب</Link>
+                </Button>
+              )}
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <h3 className="mb-3 font-semibold">إحصائيات المنصة</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <Users className="h-4 w-4" /> {stats?.members ?? 0} محترف
+              </li>
+              <li className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" /> {stats?.jobs ?? 0} وظيفة
+              </li>
+              <li className="flex items-center gap-2">
+                <FileText className="h-4 w-4" /> {stats?.articles ?? 0} منشور
+              </li>
+            </ul>
+          </Card>
+        </aside>
+
+        <section className="lg:col-span-2">
+          <h1 className="sr-only">QudPro — شبكة المحترفين في مصر</h1>
+          {user ? (
+            <PostComposer />
+          ) : (
+            <Card className="mb-6 flex items-center justify-between p-4">
+              <p className="text-sm">سجّل الدخول للمشاركة والتفاعل مع المجتمع.</p>
+              <Button asChild size="sm">
+                <Link to="/auth">تسجيل الدخول</Link>
+              </Button>
+            </Card>
+          )}
+
+          {isLoading &&
+            [1, 2, 3].map((i) => (
+              <Card key={i} className="mb-6 space-y-4 p-4">
+                <div className="flex gap-3">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-24" />
                   </div>
-                </Card>
-                <div className="text-xs text-center text-gray-500 dark:text-gray-400">
-                  Powered by QudSystem
                 </div>
-              </div>
-            </div>
+                <Skeleton className="h-40 w-full" />
+              </Card>
+            ))}
 
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <PostCreator />
-                <PhotoGrid />
-              </ErrorBoundary>
-            </div>
+          {!isLoading && posts.length === 0 && (
+            <Card className="p-8 text-center text-muted-foreground">
+              <Sparkles className="mx-auto mb-3 h-6 w-6" />
+              لا توجد منشورات بعد — كن أول من يشارك!
+            </Card>
+          )}
 
-            {/* Right Sidebar */}
-            <div className="lg:col-span-1">
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <Card className="p-4 mb-6 bg-white dark:bg-gray-800 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Trending in Egypt</h3>
-                  <div className="space-y-4">
-                    {['Cairo Tech Week', 'Photography Exhibition', 'Digital Innovation', 'Egyptian Startups'].map((topic, index) => (
-                      <div key={index} className="text-sm">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 hover:text-qudpro-primary dark:hover:text-blue-400 cursor-pointer">
-                          #{topic.replace(/\s+/g, '')}
-                        </p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{Math.floor(Math.random() * 1000) + 100} posts</p>
-                      </div>
-                    ))}
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </section>
+
+        <aside className="lg:col-span-1">
+          <Card className="p-4">
+            <h3 className="mb-4 font-semibold">أشخاص قد تعرفهم</h3>
+            <div className="space-y-4">
+              {suggestions.length === 0 && (
+                <p className="text-sm text-muted-foreground">لا توجد اقتراحات حاليًا</p>
+              )}
+              {suggestions.map((person) => (
+                <Link key={person.id} to={`/profile/${person.id}`} className="flex items-center gap-3">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={person.avatar_url ?? undefined} alt={person.full_name} />
+                    <AvatarFallback>{initials(person.full_name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{person.full_name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{person.headline || "عضو"}</p>
                   </div>
-                </Card>
-                <Card className="p-4 bg-white dark:bg-gray-800 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent News</h3>
-                  <div className="space-y-4">
-                    {[
-                      'New Photography Studio Opens in Alexandria',
-                      'Egyptian Tech Startups Raise $50M',
-                      'Digital Arts Festival Coming to Cairo',
-                      'Professional Networking Event Next Month'
-                    ].map((news, index) => (
-                      <div key={index} className="text-sm">
-                        <p className="font-medium text-gray-900 dark:text-gray-100 hover:text-qudpro-primary dark:hover:text-blue-400 cursor-pointer">
-                          {news}
-                        </p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{Math.floor(Math.random() * 24) + 1}h ago</p>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </ErrorBoundary>
+                </Link>
+              ))}
             </div>
-          </div>
-        </div>
-        {!isAuthenticated && <Footer />}
-      </ErrorBoundary>
-    </div>
+          </Card>
+        </aside>
+      </div>
+    </Layout>
   );
 };
 
